@@ -50,7 +50,7 @@ const instructions_part2 = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <h2>Part 2 Instructions</h2>
-    <p>In Part 2, you'll read about two companies looking to hire an employee.</p>
+    <p>In Part 2, you'll read about four companies looking to hire an employee.</p>
     <p>Your job will be to review each applicant's profile and rank the applicants in terms of their fit for the role.</p>
     <p>More details will be provided when that section begins.</p>
     <p style="margin-top: 40px;">Press SPACE to view examples from Part 1.</p>
@@ -271,6 +271,11 @@ imageAudioFlow.forEach(set => {
   });
 });
 
+// Shuffle image and audio blocks fully
+imageBlocks = jsPsych.randomization.shuffle(imageBlocks);
+audioBlocks = jsPsych.randomization.shuffle(audioBlocks);
+
+// Interleave, starting with an image
 let combined = [];
 const max = Math.max(imageBlocks.length, audioBlocks.length);
 for (let i = 0; i < max; i++) {
