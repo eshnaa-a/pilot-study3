@@ -1,4 +1,7 @@
-const jsPsych = initJsPsych();
+const jsPsych = initJsPsych({
+  show_progress_bar: true,
+  auto_update_progress_bar: true
+});
 
 const group = jsPsych.randomization.sampleWithoutReplacement(["male", "female"], 1)[0];
 
