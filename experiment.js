@@ -64,7 +64,7 @@ const exampleImageTrial = {
     <h3>Example Image Stimulus</h3>
     <p><em>Note: This image is <strong>not</strong> part of the actual experiment. It is shown here only for explanation purposes.</em></p>
     <div style="text-align: center;">
-      <img src="all_images/dog_example1.png" height="200" alt="Example dog image">
+      <img src="all_images/example1.png" height="200" alt="Example dog image">
     </div>
     <p><strong>Example question:</strong> How friendly does this dog look to you?</p>
     <p><em>In the real experiment, you will answer questions like this using a Likert scale from 1 (Not friendly at all) to 7 (Very friendly).</em></p>
