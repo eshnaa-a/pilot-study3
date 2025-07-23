@@ -426,6 +426,7 @@ const eceScenario2 = {
     {
       name: "Veronica",
       description: `Hi, my name is Veronica and I am 28 years old. I hold a Bachelor's Degree in Child Development from the University of British Columbia and have worked at a daycare in the city for the past four years. From my time at the daycare, I’ve come to understand that every child has their own unique needs and establish rapport accordingly. For children who need more support, I provide one-on-one attention or adapt activities to cater to their level of development. I love speaking with parents about how their child’s day went, whether it was full of laughter or included a few bumps along the way. `
+    },
     {
       name: "Maya",
       description: `Hi, my name is Maya. I am 29 years old and hold a Bachelor’s in Early Childhood Education from UBC. For the past three years, I have worked at a preschool where I feel honoured to be part of the children’s developmental milestones. I value the importance of clear communication, and I like to host a monthly ‘family morning’ where parents and children can join in on a circle time activity and parents chat informally about their child’s progress. Outside of work, I regularly take professional development courses that I can apply to my own role, as I strongly believe in the value of continual growth.`
