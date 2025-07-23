@@ -389,6 +389,7 @@ const eceScenario1 = {
     {
       name: "Jess",
       description: `Hi, my name is Jess. I am 31 years old and hold a Bachelor's Degree in Child Development from the University of Toronto. I have worked as a daycare supervisor in the city for the past five years, managing classroom dynamics, staff, and behavioural difficulties. When our center adopted a new play-based curriculum, I supported staff by facilitating planning sessions and sharing strategies that made the shift feel manageable and aligned with their teaching styles. As a supervisor I’ve also managed incidents between children involving disruptive behaviours during class time. By implementing firm and consistent expectations, I was able to prevent further outbursts.`
+    },
     {
       name: "Mary",
       description: `Hi, my name is Mary. I am 30 years old and hold a Bachelor’s in Early Childhood Education from the University of Toronto. For the past three years, I have worked as a staff lead at a preschool where I take pride in fostering a positive team culture rooted in accountability, communication, and respect. This focus on team culture has shaped how I support staff through change and new initiatives. As we adopted changes in the curriculum, I collaborated with staff to create simple templates and provide hands-on support. This helped reduce overwhelm and encouraged more consistent use across classrooms.`
