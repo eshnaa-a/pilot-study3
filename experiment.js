@@ -22,37 +22,85 @@ const logToSheet = trialData => {
   });
 };
 
-const consent = {
+
+const general_instructions = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <h2>Welcome to the experiment</h2>
-    <p>In this study, you will complete a series of tasks involving <strong>images</strong> and <strong>audio clips</strong>.</p>
-    <p style="margin-top: 20px;">
-      <strong> Before you begin please ensure you are in a quiet space.</strong><br>
-      <a href="https://docs.google.com/forms/d/e/your-google-form-id/viewform" target="_blank" 
-         style="font-size:18px; color:blue; text-decoration:underline; display:inline-block; margin-top:10px;">
-        If you wish to stop at any point, simply close this page and your data will not be recorded.
-      </a>
-    </p>
+    <p>Welcome to the experiment. This experiment consists of <strong>two parts</strong>.</p>
+    <p>Please make sure you are in a quiet space while doing the experiment.</p>
+    <p>If you wish to stop at any point, simply close this page and your data will not be recorded.</p>
     <p style="margin-top: 40px;">Press SPACE to continue.</p>
-  `,
-  choices: [' ', '0'],
-  on_finish: data => {
-    if (data.response === 48) jsPsych.endExperiment("You chose not to participate.");
-  }
+    `,
+  choices: [' ']
 };
 
-const instructions = {
+const instructions_part1 = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <p>You will be shown a face or a voice in alternating order.</p>
-    <p>After each stimuli is presented, you will answer four questions one at a time using your mouse and a slider on the screen.</p>
-    <p>Press SPACE to begin the experiment.</p>
+    <p><strong>Part 1</strong> of this experiment involves alternating trials of images and audio recordings. For each trial, you will be asked a few questions that you'll answer using a slider on the screen.
+    </p>
+    <p>Please make sure you are in a quiet space for the audio trials.</p>
+    <p style="margin-top: 40px;">Press SPACE to continue to Part 2 instructions.</p>
+    `,
+  choices: [' ']
+};
+
+const instructions_part2 = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <h2>Part 2 Instructions</h2>
+    <p>In Part 2, you'll read about two companies looking to hire an employee.</p>
+    <p>Your job will be to review each applicant's profile and rank the applicants in terms of their fit for the role.</p>
+    <p>More details will be provided when that section begins.</p>
+    <p style="margin-top: 40px;">Press SPACE to view examples from Part 1.</p>
   `,
   choices: [' ']
 };
 
-let timeline = [consent, instructions];
+const exampleImageTrial = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <h3>Example Image Stimulus</h3>
+    <p><em>Note: This image is <strong>not</strong> part of the actual experiment. It is shown here only for explanation purposes.</em></p>
+    <div style="text-align: center;">
+      <img src="all_images/dog_example1.png" height="200" alt="Example dog image">
+    </div>
+    <p><strong>Example question:</strong> How friendly does this dog look to you?</p>
+    <p><em>In the real experiment, you will answer questions like this using a Likert scale from 1 (Not friendly at all) to 7 (Very friendly).</em></p>
+    <p><strong>Press SPACE to continue.</strong></p>
+  `,
+  choices: [' ']
+};
+
+const exampleAudioTrial = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <h3>Example Audio Stimulus</h3>
+    <p><em>This audio clip is not part of the actual experiment. It is shown here for explanation purposes only.</em></p>
+    <div style="text-align: center; margin-top: 10px; margin-bottom: 20px;">
+      <audio controls>
+        <source src="all_audios/example1.wav" type="audio/wav">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+    <p><strong>Example question:</strong> How friendly do you think this person sounds?</p>
+    <p><em>In the real experiment, you will answer questions like this using a Likert scale from 1 (Not friendly at all) to 7 (Very friendly).</em></p>
+    <p><strong>Press SPACE to continue.</strong></p>
+  `,
+  choices: [' ']
+};
+
+const part1Start = {
+  type: jsPsychHtmlKeyboardResponse,
+  stimulus: `
+    <h2>Part 1</h2>
+    <p>The first part of the experiment will now begin.</p>
+    <p>Press the spacebar to continue.</p>
+  `,
+  choices: [' ']
+};
+
+let timeline = [general_instructions, instructions_part1, instructions_part2, exampleImageTrial, exampleAudioTrial, part1Start];
 
 const heightLabels = `
   <div style='display: flex; justify-content: space-between; font-size: 12px;'>
@@ -67,7 +115,7 @@ const makeImageBlock = (facePath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<img src="${facePath}" height="300"><br>
-        <p><b>1. How dominant do you think this person is?</b><br>
+        <p><b> How dominant do you think this person is? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
@@ -79,7 +127,7 @@ const makeImageBlock = (facePath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<img src="${facePath}" height="300"><br>
-        <p><b>2. How trustworthy do you think this person is?</b><br>
+        <p><b> How trustworthy do you think this person is? (1= Not trustworthy at all, 7 = Very trustworthy)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
@@ -91,7 +139,7 @@ const makeImageBlock = (facePath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<img src="${facePath}" height="300"><br>
-        <p><b>3. How honest do you think this person is?</b><br>
+        <p><b> How honest do you think this person is? (1= Not honest at all, 7 = Very honest)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
@@ -103,7 +151,19 @@ const makeImageBlock = (facePath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<img src="${facePath}" height="300"><br>
-        <p><b>4. How tall do you think this person is?</b><br>(1 = 5'5", 13 = 6'5")<br>
+        <p><b> How attractive do you think this person is? (1 = Not attractive at all, 7 = Very attractive)</b><br>
+        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+      html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
+             <div style='display: flex; justify-content: space-between;'>
+               <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+             </div>`,
+      data: { question: "attractive", stimulus: facePath, modality: "image" },
+      on_finish: logToSheet
+    },
+    {
+      type: jsPsychSurveyHtmlForm,
+      preamble: `<img src="${facePath}" height="300"><br>
+        <p><b> How tall do you think this person is?</b><br>(1 = 5'5", 13 = 6'5")<br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: facePath, modality: "image" },
@@ -118,7 +178,7 @@ const makeAudioBlock = (audioPath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls autoplay><source src="${audioPath}" type="audio/wav"></audio><br>
-        <p><b>1. How dominant do you think this person is?</b><br>
+        <p><b> How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
@@ -130,7 +190,7 @@ const makeAudioBlock = (audioPath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
-        <p><b>2. How trustworthy do you think this person is?</b><br>
+        <p><b> How trustworthy do you think this person is, based on their voice? (1 = Not trustworthy at all, 7 = Very trustworthy)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
@@ -142,7 +202,7 @@ const makeAudioBlock = (audioPath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
-        <p><b>3. How honest do you think this person is?</b><br>
+        <p><b> How honest do you think this person is, based on their voice? (1 = Not honest at all, 7 = Very honest)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
@@ -154,10 +214,37 @@ const makeAudioBlock = (audioPath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
-        <p><b>4. How tall do you think this person is?</b><br>(1 = 5'5", 13 = 6'5")<br>
+        <p><b> How attractive do you think this person is, based on their voice? (1 = Not attractive at all, 7 = Very attractive)</b><br>
+        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+      html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
+             <div style='display: flex; justify-content: space-between;'>
+               <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+             </div>`,
+      data: { question: "attractive", stimulus: audioPath, modality: "audio" },
+      on_finish: logToSheet
+    },
+    {
+      type: jsPsychSurveyHtmlForm,
+      preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
+        <p><b> How tall do you think this person is, based on their voice?</b><br>(1 = 5'5", 13 = 6'5")<br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: audioPath, modality: "audio" },
+      on_finish: logToSheet
+    },
+
+    {
+      type: jsPsychSurveyHtmlForm,
+      preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
+        <p><b> Does this voice sound human to you?</b><br>
+        <i>Please use your mouse and the slider below to select 0 (No) or 1 (Yes).</i></p>`,
+      html: `
+        <input type='range' name='response' min='0' max='1' step='1' style='width: 100%;'><br>
+        <div style='display: flex; justify-content: space-between;'>
+          <span>No</span><span style="margin-left:auto;">Yes</span>
+        </div>
+      `,
+      data: { question: "human_voice", stimulus: audioPath, modality: "audio" },
       on_finish: logToSheet
     }
   ]
