@@ -26,7 +26,7 @@ const logToSheet = trialData => {
 const general_instructions = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <p>Welcome to the experiment. This experiment consists of <strong>two parts</strong>.</p>
+    <p>Welcome to the experiment. This experiment consists of <strong>two parts</strong> and will take approximately <strong>45 minutes</strong> to complete.</p>
     <p>Please make sure you are in a quiet space while doing the experiment.</p>
     <p>If you wish to stop at any point, simply close this page and your data will not be recorded.</p>
     <p style="margin-top: 40px;">Press SPACE to continue.</p>
