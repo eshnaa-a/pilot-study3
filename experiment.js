@@ -239,14 +239,16 @@ const makeAudioBlock = (audioPath) => ({
      preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
        <p><b>Does this voice sound more human or robotic to you?</b></p>`,
      html: `
-       <label>
-         <input type="radio" name="response" value="human" required>
-         Human
-       </label><br>
-       <label>
-         <input type="radio" name="response" value="robotic" required>
-         Robotic
-       </label>
+       <div style="margin-bottom: 1em;">
+         <label style="display: block; margin-bottom: 0.5em;">
+           <input type="radio" name="response" value="human" required>
+           Human
+         </label>
+         <label style="display: block;">
+           <input type="radio" name="response" value="robotic">
+           Robotic
+         </label>
+       </div>
      `,
      data: { question: "human_voice", stimulus: audioPath, modality: "audio" },
      on_finish: logToSheet
