@@ -506,6 +506,10 @@ function createTrialWithRatingsAndRanking(scenario) {
     button_label: "", // Hide default submit button by making label empty
     data: scenario.data,
     on_load: function() {
+      // Hide the default button
+      const defaultBtn = document.querySelector('form button[type="submit"]');
+      if (defaultBtn) defaultBtn.style.display = "none";
+
       const btn = document.getElementById("customSubmit");
       const form = document.querySelector("form");
       const errorMsg = document.getElementById("errorMsg");
