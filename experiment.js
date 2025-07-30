@@ -503,19 +503,19 @@ function createTrialWithRatingsAndRanking(scenario) {
     type: jsPsychSurveyHtmlForm,
     preamble: scenario.jobDescription + "<hr><h3>Applicants:</h3>",
     html: htmlBlock,
-    button_label: "", // prevent jsPsych default button
     data: scenario.data,
     on_load: function() {
-    
-    // Hide default jsPsych submit button after it renders
-    setTimeout(() => {
-      const defaultBtn = document.querySelector('button[type="submit"]');
-      if (defaultBtn) {
-        defaultBtn.style.display = 'none';
-      } else {
-        console.log("Default submit button not found");
-      }
-    }, 50);
+      
+    // Observe and remove the default submit button as soon as it's added
+      const observer = new MutationObserver(() => {
+        const defaultBtn = document.querySelector('.jspsych-btn');
+        if (defaultBtn) {
+          defaultBtn.remove(); // remove it entirely
+          observer.disconnect(); // stop observing
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
 
       const btn = document.getElementById("customSubmit");
       const form = document.querySelector("form");
