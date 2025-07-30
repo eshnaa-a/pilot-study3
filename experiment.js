@@ -511,7 +511,7 @@ function createTrialWithRatingsAndRanking(scenario) {
     type: jsPsychSurveyHtmlForm,
     preamble: scenario.jobDescription + "<hr><h3>Applicants:</h3>",
     html: htmlBlock,
-    button_label: null, // prevent jsPsych default button
+    button_label: "", // prevent jsPsych default button
     data: scenario.data,
     on_load: function() {
       const btn = document.getElementById("customSubmit");
