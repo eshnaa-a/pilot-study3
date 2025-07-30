@@ -506,10 +506,16 @@ function createTrialWithRatingsAndRanking(scenario) {
     button_label: "", // prevent jsPsych default button
     data: scenario.data,
     on_load: function() {
+    
+    // Hide default jsPsych submit button after it renders
+    setTimeout(() => {
       const defaultBtn = document.querySelector('button[type="submit"]');
       if (defaultBtn) {
         defaultBtn.style.display = 'none';
+      } else {
+        console.log("Default submit button not found");
       }
+    }, 50);
 
       const btn = document.getElementById("customSubmit");
       const form = document.querySelector("form");
