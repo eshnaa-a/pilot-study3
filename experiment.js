@@ -505,54 +505,60 @@ function createTrialWithRatingsAndRanking(scenario) {
     html: htmlBlock,
     data: scenario.data,
     on_load: function() {
-      
-    // Observe and remove the default submit button as soon as it's added
-      const observer = new MutationObserver(() => {
-        const defaultBtn = document.querySelector('.jspsych-btn');
-        if (defaultBtn) {
-          defaultBtn.remove(); // remove it entirely
-          observer.disconnect(); // stop observing
-        }
-      });
 
-      observer.observe(document.body, { childList: true, subtree: true });
+        // 1. Try removing the button immediately (in case it’s already there)
+        const tryRemoveButton = () => {
+            const defaultBtn = document.querySelector('.jspsych-btn');
+            if (defaultBtn) defaultBtn.remove();
+        };
 
-      const btn = document.getElementById("customSubmit");
-      const form = document.querySelector("form");
-      const errorMsg = document.getElementById("errorMsg");
+        tryRemoveButton(); // run immediately
 
-      btn.addEventListener("click", () => {
-        const formData = new FormData(form);
-        const ranks = [];
+        // 2. Then observe future mutations in case button is added late
+        const observer = new MutationObserver((mutations, obs) => {
+            tryRemoveButton();
+        });
 
-        for (let [key, val] of formData.entries()) {
-          if (key.startsWith("rank_")) {
-            ranks.push(Number(val));
-          }
-        }
+        observer.observe(document.body, { childList: true, subtree: true });
 
-        const uniqueRanks = new Set(ranks);
-        const expected = [...Array(candidateCount)].map((_, i) => i + 1);
+        // 3. Form logic for validation
+        const btn = document.getElementById("customSubmit");
+        const form = document.querySelector("form");
+        const errorMsg = document.getElementById("errorMsg");
 
-        if (ranks.some(val => isNaN(val))) {
-          errorMsg.textContent = "Please enter a valid numeric rank for each candidate.";
-          return;
-        }
+        btn.addEventListener("click", () => {
+            const formData = new FormData(form);
+            const ranks = [];
 
-        if (uniqueRanks.size !== ranks.length) {
-          errorMsg.textContent = "Each candidate must have a unique rank. Please check your responses.";
-          return;
-        }
+            for (let [key, val] of formData.entries()) {
+                if (key.startsWith("rank_")) {
+                    ranks.push(Number(val));
+                }
+            }
 
-        if (!expected.every(num => ranks.includes(num))) {
-          errorMsg.textContent = `Please use each number from 1 to ${candidateCount} exactly once.`;
-          return;
-        }
+            const uniqueRanks = new Set(ranks);
+            const expected = [...Array(candidateCount)].map((_, i) => i + 1);
 
-        // Validation passed: clear error and finish trial manually
-        errorMsg.textContent = "";
-        jsPsych.finishTrial({ ...scenario.data, responses: Object.fromEntries(formData.entries()) });
-      });
+            if (ranks.some(val => isNaN(val))) {
+                errorMsg.textContent = "Please enter a valid numeric rank for each candidate.";
+                return;
+            }
+
+            if (uniqueRanks.size !== ranks.length) {
+                errorMsg.textContent = "Each candidate must have a unique rank. Please check your responses.";
+                return;
+            }
+
+            if (!expected.every(num => ranks.includes(num))) {
+                errorMsg.textContent = `Please use each number from 1 to ${candidateCount} exactly once.`;
+                return;
+            }
+
+            // Validation passed: clear error and finish trial manually
+            errorMsg.textContent = "";
+            observer.disconnect(); // stop watching for button
+            jsPsych.finishTrial({ ...scenario.data, responses: Object.fromEntries(formData.entries()) });
+        });
     },
     on_finish: logToSheet,
   };
