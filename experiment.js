@@ -470,10 +470,9 @@ function createTrialWithRatingsAndRanking(scenario) {
           min="1" 
           max="7" 
           step="1" 
-          required 
-          style="width: 100%;"
+          style="width: 60%; display: block; margin: 0 auto;"
         >
-        <div style="display: flex; justify-content: space-between; padding: 0 4px; font-weight: bold;">
+        <div style="display: flex; justify-content: space-between; padding: 0 4px; font-weight: bold; width: 60%; margin: 0 auto;">
           <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
         </div>
       </div>
@@ -507,10 +506,25 @@ function createTrialWithRatingsAndRanking(scenario) {
       const responses = JSON.parse(data.responses);
       const ranks = Object.entries(responses)
         .filter(([key]) => key.startsWith('rank_'))
-        .map(([, val]) => val);
+        .map(([, val]) => Number(val));
+
       const uniqueRanks = new Set(ranks);
+
+      if (ranks.includes(NaN)) {
+        alert("Please provide a valid rank (1 to " + scenario.candidates.length + ") for all candidates.");
+        return false;
+      }
+
       if (uniqueRanks.size !== ranks.length) {
-        alert("Please assign a unique rank number to each candidate. No duplicates allowed.");
+        alert("Each candidate must have a unique rank. Please make sure no numbers are repeated.");
+        return false;
+      }
+
+      // Optional: ensure all numbers from 1 to N are used
+      const expected = [...Array(scenario.candidates.length)].map((_, i) => i + 1);
+      const isValidRange = expected.every(num => ranks.includes(num));
+      if (!isValidRange) {
+        alert("Please use each number from 1 to " + scenario.candidates.length + " exactly once.");
         return false;
       }
     }
