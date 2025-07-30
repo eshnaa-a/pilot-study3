@@ -313,7 +313,6 @@ const ceoScenario1 = {
   jobDescription: `
     <h2>Job Posting: Chief Executive Officer (CEO)</h2>
     <p><strong>Location:</strong> Toronto, ON</p>
-    <p><strong>Start Date:</strong> As soon as possible</p>
     <p><strong>About the Company:</strong> NovaLink is a Canadian tech firm, with a team of 5000 employees, that builds smart software to help companies manage their supply chains. We’ve grown across North America and are now preparing to expand into Europe. At the same time, we’re dealing with a hostile takeover attempt from a U.S. competitor. We want to remain independent and grow internationally, without losing our focus or team stability. We are looking for a new CEO to help navigate these challenges and opportunities.</p>
   `,
   candidates: [
@@ -350,7 +349,6 @@ const ceoScenario2 = {
   jobDescription: `
     <h2>Job Posting: Chief Executive Officer (CEO)</h2>
     <p><strong>Location:</strong> Vancouver, BC</p>
-    <p><strong>Start Date:</strong> Flexible</p>
     <p><strong>About the Company:</strong> GreenPath develops software to help other companies track and reduce their environmental impact in Canada and Europe. We’ve grown quickly to a team of 500, but that growth has created new pressures. We’ve fallen behind in updating our tools  and platforms to keep up with new climate regulations across multiple countries.  Furthermore, our switch back from remote to in-office mode after the COVID lockdowns has left some staff dissatisfied and unheard. We now want to consolidate and focus on doing two things better: staying ahead of environmental standards and making GreenPath a more connected and desirable place to work. We are looking for a new CEO to help us achieve these goals.</p>
   `,
   candidates: [
@@ -387,7 +385,6 @@ const eceScenario1 = {
   jobDescription: `
     <h2>Job Posting: Early Childhood Educator (ECE)</h2>
     <p><strong>Location:</strong> Toronto, ON</p>
-    <p><strong>Start Date:</strong> Immediate</p>
     <p><strong>About the Company:</strong> Little Steps Early Learning Centre is a large, multi-centre daycare located in various parts of the Greater Toronto Area. Our downtown Toronto centre currently serves 45 children with a team of 8 dedicated staff members. Recently, the centre has been facing increasing challenges related to (i) staff adopting to new curriculum regulations and (ii) classroom management and disruptive behaviour. As a result, the centre is seeking an Early Childhood Educator (ECE) who can provide a firm lead to staff and navigate both staff and classroom conflict effectively.</p>
   `,
   candidates: [
@@ -424,7 +421,6 @@ const eceScenario2 = {
   jobDescription: `
     <h2>Job Posting: Early Childhood Educator (ECE)</h2>
     <p><strong>Location:</strong> Vancouver, BC</p>
-    <p><strong>Start Date:</strong> Flexible</p>
     <p><strong>About the Company:</strong> Early Minds Academy is a large, multi-centre daycare located in various parts of the Greater Vancouver Area. Our downtown Vancouver centre currently serves 45 children with a team of 8 dedicated staff members. At this time, the centre is in the process of enhancing its program to align more closely with child-centered approaches that prioritize emotional development and interpersonal learning. As a result, the centre is seeking an Early Childhood Educator (ECE) who is warm, nurturing, and emotionally attuned. The ideal candidate will foster close relationships with children and families and have a strong passion for learning.</p>
   `,
   candidates: [
@@ -455,34 +451,79 @@ const eceScenario2 = {
   ]
 };
 
-// Function to create the ranking trial for each scenario
-function createRankingTrial(scenario) {
-  let candidatesHtml = scenario.candidates.map((c, i) => 
-    `<strong>${i + 1}. ${c.name}</strong><br>${c.description}<br><br>`
-  ).join("");
+// Function to create the rating and ranking trial for each scenario
+function createTrialWithRatingsAndRanking(scenario) {
+  const candidateCount = scenario.candidates.length;
 
-  let inputsHtml = scenario.candidates.map(c => 
-    `<label for="rank_${c.name.replace(/\s+/g, '')}">${c.name}:</label>
-     <input type="number" id="rank_${c.name.replace(/\s+/g, '')}" name="${c.name.replace(/\s+/g, '')}" min="1" max="${scenario.candidates.length}" required><br><br>`
-  ).join("");
+  // Candidate profiles + Likert rating blocks
+  const candidateSections = scenario.candidates.map((c, i) => {
+    const id = c.name.replace(/\s+/g, '');
+    return `
+      <div style="margin-bottom: 30px;">
+        <strong>${i + 1}. ${c.name}</strong><br>
+        <p>${c.description}</p>
+        <label for="rating_${id}"><strong>How likely are you to shortlist this candidate for an interview? (1 = Very Unlikely, 7 = Very Likely)</strong></label><br>
+        <input 
+          type="range" 
+          id="rating_${id}" 
+          name="rating_${id}" 
+          min="1" 
+          max="7" 
+          step="1" 
+          required 
+          style="width: 100%;"
+        >
+        <div style="display: flex; justify-content: space-between; padding: 0 4px; font-weight: bold;">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Ranking input section
+  const rankingInputs = scenario.candidates.map(c => {
+    const id = c.name.replace(/\s+/g, '');
+    return `
+      <label for="rank_${id}">${c.name}:</label>
+      <input type="number" id="rank_${id}" name="rank_${id}" min="1" max="${candidateCount}" required><br><br>
+    `;
+  }).join("");
+
+  const htmlBlock = `
+    ${candidateSections}
+    <hr>
+    <p><strong>Ranking Task:</strong> Please rank the candidates from 1 (best fit) to ${candidateCount} (least fit). Please assign a unique rank number to each candidate.</p>
+    ${rankingInputs}
+  `;
 
   return {
     type: jsPsychSurveyHtmlForm,
-    preamble: scenario.jobDescription + "<hr><h3>Candidates:</h3>" + candidatesHtml + `<hr><p><strong>Ranking Task:</strong> Please rank the candidates from 1 (best fit) to ${scenario.candidates.length} (least fit).</p>`,
-    html: inputsHtml,
+    preamble: scenario.jobDescription + "<hr><h3>Applicants:</h3>",
+    html: htmlBlock,
     button_label: "Submit",
     data: scenario.data,
-    on_finish: logToSheet
+    on_finish: logToSheet,
+    on_submit: function(data) {
+      const responses = JSON.parse(data.responses);
+      const ranks = Object.entries(responses)
+        .filter(([key]) => key.startsWith('rank_'))
+        .map(([, val]) => val);
+      const uniqueRanks = new Set(ranks);
+      if (uniqueRanks.size !== ranks.length) {
+        alert("Please assign a unique rank number to each candidate. No duplicates allowed.");
+        return false;
+      }
+    }
   };
 }
 
 const allScenarios = [ceoScenario1, ceoScenario2, eceScenario1, eceScenario2];
 const randomizedScenarios = jsPsych.randomization.shuffle(allScenarios);
-const allRankingTrials = randomizedScenarios.map(createRankingTrial);
+const allCombinedTrials = randomizedScenarios.map(createTrialWithRatingsAndRanking);
 
 // Add your instructions and then these trials to timeline
 timeline.push(instructions_exppart2);
-timeline = timeline.concat(allRankingTrials);
+timeline = timeline.concat(allCombinedTrials);
 
 // === Final Message ===
 timeline.push({
