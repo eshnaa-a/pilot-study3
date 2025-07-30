@@ -493,45 +493,57 @@ function createTrialWithRatingsAndRanking(scenario) {
     <hr>
     <p><strong>Ranking Task:</strong> Please rank the applicants from 1 (best fit) to ${candidateCount} (least fit). Please assign a unique rank number to each applicant.</p>
     ${rankingInputs}
+    <button id="customSubmit" type="button">Submit</button>
+    <div id="errorMsg" style="color:red; font-weight:bold;"></div>
   `;
+
+  // Then in your trial object:
 
   return {
     type: jsPsychSurveyHtmlForm,
     preamble: scenario.jobDescription + "<hr><h3>Applicants:</h3>",
     html: htmlBlock,
-    button_label: "Submit",
+    button_label: "", // Hide default submit button by making label empty
     data: scenario.data,
+    on_load: function() {
+      const btn = document.getElementById("customSubmit");
+      const form = document.querySelector("form");
+      const errorMsg = document.getElementById("errorMsg");
+
+      btn.addEventListener("click", () => {
+        const formData = new FormData(form);
+        const ranks = [];
+
+        for (let [key, val] of formData.entries()) {
+          if (key.startsWith("rank_")) {
+            ranks.push(Number(val));
+          }
+        }
+
+        const uniqueRanks = new Set(ranks);
+        const expected = [...Array(candidateCount)].map((_, i) => i + 1);
+
+        if (ranks.some(val => isNaN(val))) {
+          errorMsg.textContent = "Please enter a valid numeric rank for each candidate.";
+          return;
+        }
+
+        if (uniqueRanks.size !== ranks.length) {
+          errorMsg.textContent = "Each candidate must have a unique rank. Please check your responses.";
+          return;
+        }
+
+        if (!expected.every(num => ranks.includes(num))) {
+          errorMsg.textContent = `Please use each number from 1 to ${candidateCount} exactly once.`;
+          return;
+        }
+
+        // Validation passed: clear error and finish trial manually
+        errorMsg.textContent = "";
+        jsPsych.finishTrial({ ...scenario.data, responses: Object.fromEntries(formData.entries()) });
+      });
+    },
     on_finish: logToSheet,
-    on_submit: function(data) {
-      const responses = JSON.parse(data.responses);
-      const ranks = Object.entries(responses)
-        .filter(([key]) => key.startsWith('rank_'))
-        .map(([, val]) => Number(val));
-
-      const uniqueRanks = new Set(ranks);
-      const expected = [...Array(candidateCount)].map((_, i) => i + 1);
-
-      // Check for NaN
-      if (ranks.some(val => isNaN(val))) {
-        alert("Please enter a valid numeric rank for each candidate.");
-        return false; // Prevent trial advance
-      }
-  
-      // Check for duplicate values
-      if (uniqueRanks.size !== ranks.length) {
-        alert("Each candidate must have a unique rank. Please check your responses.");
-        return false;
-      }
-
-      // Check that all ranks from 1 to N are used
-      if (!expected.every(num => ranks.includes(num))) {
-        alert(`Please use each number from 1 to ${ranks.length} exactly once.`);
-        return false;
-      }
-
-      // If validation passes, allow trial to finish
-      return true;
-    }
   };
 }
 
