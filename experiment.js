@@ -3,14 +3,6 @@ const jsPsych = initJsPsych({
   auto_update_progress_bar: true
 });
 
-const style = document.createElement("style");
-style.innerHTML = `
-  .jspsych-survey-html-form .jspsych-btn {
-    display: none !important;
-  }
-`;
-document.head.appendChild(style);
-
 const group = jsPsych.randomization.sampleWithoutReplacement(["male", "female"], 1)[0];
 
 const imageAudioFlow = [
@@ -514,6 +506,11 @@ function createTrialWithRatingsAndRanking(scenario) {
     button_label: "", // prevent jsPsych default button
     data: scenario.data,
     on_load: function() {
+      const defaultBtn = document.querySelector('button[type="submit"]');
+      if (defaultBtn) {
+        defaultBtn.style.display = 'none';
+      }
+
       const btn = document.getElementById("customSubmit");
       const form = document.querySelector("form");
       const errorMsg = document.getElementById("errorMsg");
