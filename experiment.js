@@ -3,6 +3,14 @@ const jsPsych = initJsPsych({
   auto_update_progress_bar: true
 });
 
+const style = document.createElement("style");
+style.innerHTML = `
+  .jspsych-survey-html-form .jspsych-btn {
+    display: none !important;
+  }
+`;
+document.head.appendChild(style);
+
 const group = jsPsych.randomization.sampleWithoutReplacement(["male", "female"], 1)[0];
 
 const imageAudioFlow = [
@@ -503,12 +511,9 @@ function createTrialWithRatingsAndRanking(scenario) {
     type: jsPsychSurveyHtmlForm,
     preamble: scenario.jobDescription + "<hr><h3>Applicants:</h3>",
     html: htmlBlock,
-    button_label: "", // Hide default submit button by making label empty
+    button_label: null, // prevent jsPsych default button
     data: scenario.data,
     on_load: function() {
-      // Hide the default button
-      document.querySelectorAll('.jspsych-survey-html-form button').forEach(btn => btn.style.display = 'none');
-
       const btn = document.getElementById("customSubmit");
       const form = document.querySelector("form");
       const errorMsg = document.getElementById("errorMsg");
