@@ -502,31 +502,42 @@ function createTrialWithRatingsAndRanking(scenario) {
     button_label: "Submit",
     data: scenario.data,
     on_finish: logToSheet,
-    on_submit: function(data) {
-      const responses = JSON.parse(data.responses);
-      const ranks = Object.entries(responses)
-        .filter(([key]) => key.startsWith('rank_'))
-        .map(([, val]) => Number(val));
+    on_load: function() {
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const formData = new FormData(e.target);
+        const ranks = [];
 
-      const uniqueRanks = new Set(ranks);
+        for (let [key, val] of formData.entries()) {
+          if (key.startsWith('rank_')) {
+            ranks.push(Number(val));
+          }
+        }
 
-      if (ranks.includes(NaN)) {
-        alert("Please provide a valid rank (1 to " + scenario.candidates.length + ") for all candidates.");
-        return false;
-      }
+        const uniqueRanks = new Set(ranks);
+        const expected = [...Array(candidateCount)].map((_, i) => i + 1);
 
-      if (uniqueRanks.size !== ranks.length) {
-        alert("Each candidate must have a unique rank. Please make sure no numbers are repeated.");
-        return false;
-      }
+        // Check for NaN
+        if (ranks.includes(NaN)) {
+          alert("Please enter a valid numeric rank for each candidate.");
+          e.preventDefault();
+          return;
+        }
 
-      // Optional: ensure all numbers from 1 to N are used
-      const expected = [...Array(scenario.candidates.length)].map((_, i) => i + 1);
-      const isValidRange = expected.every(num => ranks.includes(num));
-      if (!isValidRange) {
-        alert("Please use each number from 1 to " + scenario.candidates.length + " exactly once.");
-        return false;
-      }
+        // Check for duplicate values
+        if (uniqueRanks.size !== ranks.length) {
+          alert("Each candidate must have a unique rank. Please check your responses.");
+          e.preventDefault();
+          return;
+        }
+
+        // Check that all ranks from 1 to N are used
+        const isValidRange = expected.every(num => ranks.includes(num));
+        if (!isValidRange) {
+          alert("Please use each number from 1 to " + candidateCount + " exactly once.");
+          e.preventDefault();
+          return;
+        }
+      });
     }
   };
 }
