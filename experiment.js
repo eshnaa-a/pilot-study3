@@ -283,17 +283,17 @@ for (let i = 0; i < max; i++) {
   if (i < audioBlocks.length) combined.push(audioBlocks[i]);
 }
 
-timeline = timeline.concat(combined);
+// timeline = timeline.concat(combined);
 
-timeline.push({
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: `
-    <h2>End of Part 1</h2>
-    <p>You have completed Part 1 of the experiment.</p>
-    <p>Take a short break if needed. Press <strong>SPACE</strong> to continue to Part 2 instructions.</p>
-  `,
-  choices: [' ']
-});
+// timeline.push({
+//   type: jsPsychHtmlKeyboardResponse,
+//   stimulus: `
+//     <h2>End of Part 1</h2>
+//     <p>You have completed Part 1 of the experiment.</p>
+//     <p>Take a short break if needed. Press <strong>SPACE</strong> to continue to Part 2 instructions.</p>
+//   `,
+//   choices: [' ']
+// });
 
 const instructions_exppart2 = {
   type: jsPsychHtmlKeyboardResponse,
@@ -502,42 +502,36 @@ function createTrialWithRatingsAndRanking(scenario) {
     button_label: "Submit",
     data: scenario.data,
     on_finish: logToSheet,
-    on_load: function() {
-      document.querySelector('form').addEventListener('submit', function(e) {
-        const formData = new FormData(e.target);
-        const ranks = [];
+    on_submit: function(data) {
+      const responses = JSON.parse(data.responses);
+      const ranks = Object.entries(responses)
+        .filter(([key]) => key.startsWith('rank_'))
+        .map(([, val]) => Number(val));
 
-        for (let [key, val] of formData.entries()) {
-          if (key.startsWith('rank_')) {
-            ranks.push(Number(val));
-          }
-        }
+      const uniqueRanks = new Set(ranks);
+      const expected = [...Array(candidateCount)].map((_, i) => i + 1);
 
-        const uniqueRanks = new Set(ranks);
-        const expected = [...Array(candidateCount)].map((_, i) => i + 1);
+      // Check for NaN
+      if (ranks.some(val => isNaN(val))) {
+        alert("Please enter a valid numeric rank for each candidate.");
+        return false; // Prevent trial advance
+      }
+  
+      // Check for duplicate values
+      if (uniqueRanks.size !== ranks.length) {
+        alert("Each candidate must have a unique rank. Please check your responses.");
+        return false;
+      }
 
-        // Check for NaN
-        if (ranks.includes(NaN)) {
-          alert("Please enter a valid numeric rank for each candidate.");
-          e.preventDefault();
-          return;
-        }
+      // Check that all ranks from 1 to N are used
+      const isValidRange = expected.every(num => ranks.includes(num));
+      if (!isValidRange) {
+        alert("Please use each number from 1 to " + candidateCount + " exactly once.");
+        return false;
+      }
 
-        // Check for duplicate values
-        if (uniqueRanks.size !== ranks.length) {
-          alert("Each candidate must have a unique rank. Please check your responses.");
-          e.preventDefault();
-          return;
-        }
-
-        // Check that all ranks from 1 to N are used
-        const isValidRange = expected.every(num => ranks.includes(num));
-        if (!isValidRange) {
-          alert("Please use each number from 1 to " + candidateCount + " exactly once.");
-          e.preventDefault();
-          return;
-        }
-      });
+      // If validation passes, allow trial to finish
+      return true;
     }
   };
 }
