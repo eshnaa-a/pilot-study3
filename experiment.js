@@ -51,7 +51,7 @@ const instructions_part2 = {
   stimulus: `
     <h2>Part 2 Instructions</h2>
     <p>In Part 2, you'll read about four companies looking to hire an employee.</p>
-    <p>Your job will be to review each applicant's profile and rank the applicants in terms of their fit for the role.</p>
+    <p>Your job will be to review each applicant's profile, then rate how likely you are to shortlist each applicant for an interview and rank the applicants in terms of their fit for the role.</p>
     <p>More details will be provided when that section begins.</p>
     <p style="margin-top: 40px;">Press SPACE to view examples from Part 1.</p>
   `,
@@ -300,7 +300,7 @@ const instructions_exppart2 = {
   stimulus: `
     <h2>Part 2 Instructions</h2>
     <p>In this next part, you will be presented with four different job postings from companies looking to hire an employee.</p>
-    <p>Each job posting includes six different applications from individuals who have applied for the role. Your task is to read through each applicant profile and rank them based on how well you think they fit the position.</p> 
+    <p>Each job posting includes six different applications from individuals who have applied for the role. Your task is to read through each applicant profile, then rate how likely you are to shortlist each applicant for an interview and rank them based on how well you think they fit the position.</p> 
     <p>Please continue to respond as thoughtfully and accurately as possible.</p>
     <p>Press <strong>SPACE</strong> to begin Part 2.</p>
   `,
@@ -462,7 +462,7 @@ function createTrialWithRatingsAndRanking(scenario) {
       <div style="margin-bottom: 30px;">
         <strong>${i + 1}. ${c.name}</strong><br>
         <p>${c.description}</p>
-        <label for="rating_${id}"><strong>How likely are you to shortlist this candidate for an interview? (1 = Very Unlikely, 7 = Very Likely)</strong></label><br>
+        <label for="rating_${id}"><strong>How likely are you to shortlist this applicant for an interview? (1 = Very Unlikely, 7 = Very Likely)</strong></label><br>
         <input 
           type="range" 
           id="rating_${id}" 
@@ -491,7 +491,7 @@ function createTrialWithRatingsAndRanking(scenario) {
   const htmlBlock = `
     ${candidateSections}
     <hr>
-    <p><strong>Ranking Task:</strong> Please rank the candidates from 1 (best fit) to ${candidateCount} (least fit). Please assign a unique rank number to each candidate.</p>
+    <p><strong>Ranking Task:</strong> Please rank the applicants from 1 (best fit) to ${candidateCount} (least fit). Please assign a unique rank number to each applicant.</p>
     ${rankingInputs}
   `;
 
@@ -524,9 +524,8 @@ function createTrialWithRatingsAndRanking(scenario) {
       }
 
       // Check that all ranks from 1 to N are used
-      const isValidRange = expected.every(num => ranks.includes(num));
-      if (!isValidRange) {
-        alert("Please use each number from 1 to " + candidateCount + " exactly once.");
+      if (!expected.every(num => ranks.includes(num))) {
+        alert(`Please use each number from 1 to ${ranks.length} exactly once.`);
         return false;
       }
 
