@@ -261,14 +261,8 @@ function addBlockLabelToTrial(trial, blockLabel) {
 
 // Helper function to build one block's timeline
 const buildStimulusBlock = (imageIDs, audioIDs, blockLabel) => {
-  // Shuffle the order of image stimuli IDs within the block
-  const shuffledImageIDs = jsPsych.randomization.shuffle(imageIDs);
-  // Shuffle the order of audio stimuli IDs within the block
-  const shuffledAudioIDs = jsPsych.randomization.shuffle(audioIDs);
-
   let imageTrials = [];
-  shuffledImageIDs.forEach(faceID => {
-    // Shuffle variants for each image stimulus
+  imageIDs.forEach(faceID => {
     const variants = jsPsych.randomization.shuffle([1, 2, 3, 4, 5, 6]);
     variants.forEach(v => {
       const path = `all_images/${group}_face${faceID.toString().padStart(2, "0")}_${v}.png`;
@@ -277,8 +271,7 @@ const buildStimulusBlock = (imageIDs, audioIDs, blockLabel) => {
   });
 
   let audioTrials = [];
-  shuffledAudioIDs.forEach(audioID => {
-    // Shuffle pitches for each audio stimulus
+  audioIDs.forEach(audioID => {
     const pitches = jsPsych.randomization.shuffle([1, 2, 3]);
     pitches.forEach(p => {
       const path = `all_audios/${group}_voice${audioID.toString().padStart(2, "0")}_pitch${p}.wav`;
@@ -286,7 +279,11 @@ const buildStimulusBlock = (imageIDs, audioIDs, blockLabel) => {
     });
   });
 
-  // Interleave image and audio trials strictly alternating, without shuffling
+  // Shuffle the individual image and audio trials arrays separately
+  imageTrials = jsPsych.randomization.shuffle(imageTrials);
+  audioTrials = jsPsych.randomization.shuffle(audioTrials);
+
+  // Interleave trials: image, audio, image, audio ...
   let block = [];
   const maxLength = Math.max(imageTrials.length, audioTrials.length);
   for (let i = 0; i < maxLength; i++) {
@@ -294,8 +291,9 @@ const buildStimulusBlock = (imageIDs, audioIDs, blockLabel) => {
     if (i < audioTrials.length) block.push(audioTrials[i]);
   }
 
-  return block;  // DO NOT shuffle here
+  return block;
 };
+
 
 
 
