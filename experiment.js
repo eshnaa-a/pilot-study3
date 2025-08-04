@@ -230,15 +230,15 @@ const makeAudioBlock = (audioPath) => ({
 
 // Blocks set up
 const imageBlocks = {
-  a: [1, 2, 3],
-  b: [4, 5, 6],
-  c: [7, 8, 9, 10]
+  a: [1, 2, 3],       // 18 image trials
+  b: [4, 5, 6],       // 18 image trials
+  c: [7, 8, 9, 10]    // 24 image trials
 };
 
 const audioBlocks = {
-  a: [1, 2, 3, 4, 5, 6],
-  b: [7, 8, 9, 10, 11, 12, 13],
-  c: [14, 15, 16, 17, 18, 19, 20]
+  a: [1, 2, 3, 4, 5, 6],         // 18 audio trials
+  b: [7, 8, 9, 10, 11, 12],      // 18 audio trials
+  c: [13, 14, 15, 16, 17, 18, 19, 20] // 24 audio trials
 };
 
 function addBlockLabelToTrial(trial, blockLabel) {
