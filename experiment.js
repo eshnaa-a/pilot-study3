@@ -25,7 +25,7 @@ const logToSheet = trialData => {
 const general_instructions = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <p>Welcome to the experiment. This experiment consists of <strong>two parts</strong> and will take approximately <strong>45 minutes</strong> to complete.</p>
+    <p>Welcome to the experiment. This experiment will take approximately <strong>30 minutes</strong> to complete.</p>
     <p>Please make sure you are in a quiet space while doing the experiment.</p>
     <p>If you wish to stop at any point, simply close this page and your data will not be recorded.</p>
     <p style="margin-top: 40px;">Press SPACE to continue.</p>
@@ -36,24 +36,12 @@ const general_instructions = {
 const instructions_part1 = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <h2>Part 1 Instructions</h2>
-    <p>Part 1 of this experiment involves alternating trials of images and audio recordings. For each trial, you will be asked a few questions that you'll answer using a slider on the screen.
+    <h2>Instructions</h2>
+    <p>In this experiment, alternating trials of images and audio recordings will be presented. For each trial, you will be asked a few questions that you'll answer using a slider on the screen.
     </p>
     <p>Please make sure you are in a quiet space for the audio trials.</p>
     <p style="margin-top: 40px;">Press SPACE to continue to Part 2 instructions.</p>
     `,
-  choices: [' ']
-};
-
-const instructions_part2 = {
-  type: jsPsychHtmlKeyboardResponse,
-  stimulus: `
-    <h2>Part 2 Instructions</h2>
-    <p>In Part 2, you'll read about four companies looking to hire an employee.</p>
-    <p>Your job will be to review each applicant's profile, then rate how likely you are to shortlist each applicant for an interview and rank the applicants in terms of their fit for the role.</p>
-    <p>More details will be provided when that section begins.</p>
-    <p style="margin-top: 40px;">Press SPACE to view examples from Part 1.</p>
-  `,
   choices: [' ']
 };
 
@@ -93,14 +81,13 @@ const exampleAudioTrial = {
 const part1Start = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
-    <h2>Part 1</h2>
-    <p>The first part of the experiment will now begin.</p>
+    <p>The experiment will now begin.</p>
     <p>Press the spacebar to continue.</p>
   `,
   choices: [' ']
 };
 
-let timeline = [general_instructions, instructions_part1, instructions_part2, exampleImageTrial, exampleAudioTrial, part1Start];
+let timeline = [general_instructions, instructions_part1, exampleImageTrial, exampleAudioTrial, part1Start];
 
 const heightLabels = `
   <div style='display: flex; justify-content: space-between; font-size: 12px;'>
