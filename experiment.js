@@ -242,42 +242,62 @@ const audioBlocks = {
   c: [14, 15, 16, 17, 18, 19, 20]
 };
 
-// Helper function to build one block's timeline
-const buildStimulusBlock = (imageIDs, audioIDs) => {
-  let block = [];
+function addBlockLabelToTrial(trial, blockLabel) {
+  trial.timeline = trial.timeline.map(t => {
+    const labelHtml = `<div style="text-align:center; font-size:12px; color:#999; opacity:0.3; position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+                         Block ${blockLabel.toUpperCase()}
+                       </div>`;
 
-  imageIDs.forEach(faceID => {
+    if (t.preamble) {
+      return {...t, preamble: labelHtml + t.preamble};
+    } else if (t.stimulus) {
+      return {...t, stimulus: labelHtml + t.stimulus};
+    } else {
+      return {...t, stimulus: labelHtml};
+    }
+  });
+  return trial;
+}
+
+// Helper function to build one block's timeline
+const buildStimulusBlock = (imageIDs, audioIDs, blockLabel) => {
+  // Shuffle the order of image stimuli IDs within the block
+  const shuffledImageIDs = jsPsych.randomization.shuffle(imageIDs);
+  // Shuffle the order of audio stimuli IDs within the block
+  const shuffledAudioIDs = jsPsych.randomization.shuffle(audioIDs);
+
+  let imageTrials = [];
+  shuffledImageIDs.forEach(faceID => {
+    // Shuffle variants for each image stimulus
     const variants = jsPsych.randomization.shuffle([1, 2, 3, 4, 5, 6]);
     variants.forEach(v => {
       const path = `all_images/${group}_face${faceID.toString().padStart(2, "0")}_${v}.png`;
-      block.push(makeImageBlock(path));
+      imageTrials.push(addBlockLabelToTrial(makeImageBlock(path), blockLabel));
     });
   });
 
-  audioIDs.forEach(audioID => {
+  let audioTrials = [];
+  shuffledAudioIDs.forEach(audioID => {
+    // Shuffle pitches for each audio stimulus
     const pitches = jsPsych.randomization.shuffle([1, 2, 3]);
     pitches.forEach(p => {
       const path = `all_audios/${group}_voice${audioID.toString().padStart(2, "0")}_pitch${p}.wav`;
-      block.push(makeAudioBlock(path));
+      audioTrials.push(addBlockLabelToTrial(makeAudioBlock(path), blockLabel));
     });
   });
 
-  return jsPsych.randomization.shuffle(block);
+  // Interleave image and audio trials strictly alternating, without shuffling
+  let block = [];
+  const maxLength = Math.max(imageTrials.length, audioTrials.length);
+  for (let i = 0; i < maxLength; i++) {
+    if (i < imageTrials.length) block.push(imageTrials[i]);
+    if (i < audioTrials.length) block.push(audioTrials[i]);
+  }
+
+  return block;  // DO NOT shuffle here
 };
 
-function createEndOfBlockScreen(blockLabel) {
-  return {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: `
-      <div style="text-align: center; padding: 40px;">
-        <h2 style="color: #333;">End of Block ${blockLabel.toUpperCase()}</h2>
-        <p>You have completed this section. Take a short break if needed.</p>
-        <p><strong>Press SPACE to continue.</strong></p>
-      </div>
-    `,
-    choices: [' ']
-  };
-}
+
 
 // Add "block" label to each trial
 const tagBlock = (blockArray, blockLabel) =>
@@ -289,15 +309,30 @@ const tagBlock = (blockArray, blockLabel) =>
     }))
   }));
 
-const blockA = tagBlock(buildStimulusBlock(imageBlocks.a, audioBlocks.a), "A");
-const blockB = tagBlock(buildStimulusBlock(imageBlocks.b, audioBlocks.b), "B");
-const blockC = tagBlock(buildStimulusBlock(imageBlocks.c, audioBlocks.c), "C");
+const blockA = tagBlock(buildStimulusBlock(imageBlocks.a, audioBlocks.a, "A"), "A");
+const blockB = tagBlock(buildStimulusBlock(imageBlocks.b, audioBlocks.b, "B"), "B");
+const blockC = tagBlock(buildStimulusBlock(imageBlocks.c, audioBlocks.c, "C"), "C");
 
 const randomizedBlockOrder = jsPsych.randomization.shuffle([
   { name: "A", block: blockA },
   { name: "B", block: blockB },
   { name: "C", block: blockC }
 ]);
+
+// End of block label
+function createEndOfBlockScreen(blockLabel) {
+  return {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+      <div style="font-size: 24px; text-align: center; margin-top: 100px;">
+        <p>End of Block ${blockLabel}</p>
+        <p>Take a short break if you need to.</p>
+        <p>Press SPACE to continue.</p>
+      </div>
+    `,
+    choices: [' ']
+  };
+}
 
 for (let i = 0; i < randomizedBlockOrder.length; i++) {
   timeline = timeline.concat(randomizedBlockOrder[i].block);
