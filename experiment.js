@@ -5,14 +5,6 @@ const jsPsych = initJsPsych({
 
 const group = jsPsych.randomization.sampleWithoutReplacement(["male", "female"], 1)[0];
 
-const imageAudioFlow = [
-  { images: [1, 2], audios: [1, 2, 3, 4] },
-  { images: [3, 4], audios: [5, 6, 7, 8] },
-  { images: [5, 6], audios: [9, 10, 11, 12] },
-  { images: [7, 8], audios: [13, 14, 15, 16] },
-  { images: [9, 10], audios: [17, 18, 19, 20] }
-];
-
 const logToSheet = trialData => {
   fetch("https://script.google.com/macros/s/AKfycbwYsAlfJ-iaUD5vU93CravpfjDrUwhNtq0ELbQLb8wzLOXfMi0QFKMmkZpsja9lNiYJ3w/exec", {
     method: "POST",
@@ -237,42 +229,82 @@ const makeAudioBlock = (audioPath) => ({
   ]
 });
 
-// === Build & Interleave ===
-let imageBlocks = [], audioBlocks = [];
+// Blocks set up
+const imageBlocks = {
+  a: [1, 2, 3],
+  b: [4, 5, 6],
+  c: [7, 8, 9, 10]
+};
 
-imageAudioFlow.forEach(set => {
-  set.images.forEach(imgID => {
+const audioBlocks = {
+  a: [1, 2, 3, 4, 5, 6],
+  b: [7, 8, 9, 10, 11, 12, 13],
+  c: [14, 15, 16, 17, 18, 19, 20]
+};
+
+// Helper function to build one block's timeline
+const buildStimulusBlock = (imageIDs, audioIDs) => {
+  let block = [];
+
+  imageIDs.forEach(faceID => {
     const variants = jsPsych.randomization.shuffle([1, 2, 3, 4, 5, 6]);
     variants.forEach(v => {
-      const path = `all_images/${group}_face${imgID.toString().padStart(2, "0")}_${v}.png`;
-      imageBlocks.push(makeImageBlock(path));
+      const path = `all_images/${group}_face${faceID.toString().padStart(2, "0")}_${v}.png`;
+      block.push(makeImageBlock(path));
     });
   });
-  set.audios.forEach(audioID => {
+
+  audioIDs.forEach(audioID => {
     const pitches = jsPsych.randomization.shuffle([1, 2, 3]);
     pitches.forEach(p => {
       const path = `all_audios/${group}_voice${audioID.toString().padStart(2, "0")}_pitch${p}.wav`;
-      audioBlocks.push(makeAudioBlock(path));
+      block.push(makeAudioBlock(path));
     });
   });
-});
 
-// Shuffle image and audio blocks fully
-imageBlocks = jsPsych.randomization.shuffle(imageBlocks);
-audioBlocks = jsPsych.randomization.shuffle(audioBlocks);
+  return jsPsych.randomization.shuffle(block);
+};
 
-// Interleave, starting with an image
-let combined = [];
-const max = Math.max(imageBlocks.length, audioBlocks.length);
-for (let i = 0; i < max; i++) {
-  if (i < imageBlocks.length) combined.push(imageBlocks[i]);
-  if (i < audioBlocks.length) combined.push(audioBlocks[i]);
+function createEndOfBlockScreen(blockLabel) {
+  return {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: `
+      <div style="text-align: center; padding: 40px;">
+        <h2 style="color: #333;">End of Block ${blockLabel.toUpperCase()}</h2>
+        <p>You have completed this section. Take a short break if needed.</p>
+        <p><strong>Press SPACE to continue.</strong></p>
+      </div>
+    `,
+    choices: [' ']
+  };
 }
 
-timeline.push({
-  timeline: combined,
-  data: { block: "interleaved_image_audio_block" }
-});
+// Add "block" label to each trial
+const tagBlock = (blockArray, blockLabel) =>
+  blockArray.map(trial => ({
+    ...trial,
+    timeline: trial.timeline.map(t => ({
+      ...t,
+      data: { ...(t.data || {}), block: blockLabel }
+    }))
+  }));
+
+const blockA = tagBlock(buildStimulusBlock(imageBlocks.a, audioBlocks.a), "A");
+const blockB = tagBlock(buildStimulusBlock(imageBlocks.b, audioBlocks.b), "B");
+const blockC = tagBlock(buildStimulusBlock(imageBlocks.c, audioBlocks.c), "C");
+
+const randomizedBlockOrder = jsPsych.randomization.shuffle([
+  { name: "A", block: blockA },
+  { name: "B", block: blockB },
+  { name: "C", block: blockC }
+]);
+
+for (let i = 0; i < randomizedBlockOrder.length; i++) {
+  timeline = timeline.concat(randomizedBlockOrder[i].block);
+  if (i < randomizedBlockOrder.length - 1) {
+    timeline.push(createEndOfBlockScreen(randomizedBlockOrder[i].name));
+  }
+}
 
 // === Final Message ===
 timeline.push({
