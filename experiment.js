@@ -29,10 +29,9 @@ const instructions_part1 = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <h2>Instructions</h2>
-    <p>In this experiment, alternating trials of images and audio recordings will be presented. For each trial, you will be asked a few questions that you'll answer using a slider on the screen.
-    </p>
+    <p>There will be 3 blocks in this experiment, Blocks A, B, and C (presented randomly). In each block, you'll first see an image and answer 5 questions about the image, followed by an audio recording with 6 questions per recording.</p>
     <p>Please make sure you are in a quiet space for the audio trials.</p>
-    <p style="margin-top: 40px;">Press SPACE to continue to Part 2 instructions.</p>
+    <p style="margin-top: 40px;">Press SPACE to view examples of the images and audio recordings before you begin the actual experiment.</p>
     `,
   choices: [' ']
 };
