@@ -210,7 +210,6 @@ const makeAudioBlock = (audioPath) => ({
       data: { question: "tall", stimulus: audioPath, modality: "audio" },
       on_finish: logToSheet
     },
-
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `
@@ -220,14 +219,18 @@ const makeAudioBlock = (audioPath) => ({
         <p><b>Does this voice sound more human or robotic to you?</b></p>
       `,
       html: `
-        <label>
-          <input type="radio" name="response" value="human" required>
-          Human
-        </label><br>
-        <label>
-          <input type="radio" name="response" value="robotic">
-          Robotic
-        </label>
+        <div>
+          <label>
+            <input type="radio" name="response" value="human" required>
+            Human
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="radio" name="response" value="robotic">
+            Robotic
+          </label>
+        </div>
       `,
       data: { question: "human_voice", stimulus: audioPath, modality: "audio" },
       on_finish: logToSheet
