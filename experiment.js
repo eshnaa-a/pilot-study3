@@ -212,18 +212,25 @@ const makeAudioBlock = (audioPath) => ({
     },
 
     {
-     type: jsPsychSurveyHtmlForm,
-     preamble: `<audio controls><source src="${audioPath}" type="audio/wav"></audio><br>
-       <p><b>Does this voice sound more human or robotic to you?</b><br>
-       <i>Please use your mouse and the slider below to indicate your response.</i></p>`,
-     html: `
-       <input type='range' name='response' min='0' max='1' step='1' style='width: 100%;'><br>
-       <div style='display: flex; justify-content: space-between;'>
-         <span>Human</span><span style="margin-left:auto;">Robotic</span>
-       </div>
-     `,
-     data: { question: "human_voice", stimulus: audioPath, modality: "audio" },
-     on_finish: logToSheet
+      type: jsPsychSurveyHtmlForm,
+      preamble: `
+        <audio controls>
+          <source src="${audioPath}" type="audio/wav">
+        </audio><br>
+        <p><b>Does this voice sound more human or robotic to you?</b></p>
+      `,
+      html: `
+        <label>
+          <input type="radio" name="response" value="human" required>
+          Human
+        </label><br>
+        <label>
+          <input type="radio" name="response" value="robotic">
+          Robotic
+        </label>
+      `,
+      data: { question: "human_voice", stimulus: audioPath, modality: "audio" },
+      on_finish: logToSheet
     }
   ]
 });
