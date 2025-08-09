@@ -1,3 +1,17 @@
+// Initialize Firebase (put at the top of experiment.js)
+const firebaseConfig = {
+  apiKey: "AIzaSyCBr9qbeKaCc32V1Ev_CQFDD6wpSTuZeps",
+  authDomain: "pilot-study-3.firebaseapp.com",
+  databaseURL: "https://pilot-study-3-default-rtdb.firebaseio.com",
+  projectId: "pilot-study-3",
+  storageBucket: "pilot-study-3.firebasestorage.app",
+  messagingSenderId: "803701219913",
+  appId: "1:803701219913:web:681e6ae2520ad6cbc85598"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 const jsPsych = initJsPsych({
   show_progress_bar: true,
   auto_update_progress_bar: true
@@ -5,13 +19,26 @@ const jsPsych = initJsPsych({
 
 const group = jsPsych.randomization.sampleWithoutReplacement(["male", "female"], 1)[0];
 
-const logToSheet = trialData => {
-  fetch("https://script.google.com/macros/s/AKfycbwYsAlfJ-iaUD5vU93CravpfjDrUwhNtq0ELbQLb8wzLOXfMi0QFKMmkZpsja9lNiYJ3w/exec", {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify([trialData])
-  });
+const participantID = jsPsych.data.getURLVariable("id") || Math.floor(Math.random() * 1000000);
+jsPsych.data.addProperties({ participantID });
+
+
+const logToFirebase = (trialData) => {
+  const participantID = jsPsych.data.get().values()[0]?.participantID || "unknown";
+
+  const entry = {
+    participantID,
+    group,
+    modality: trialData.modality,
+    block: trialData.block || "",
+    stimulus: trialData.stimulus || "",
+    question: trialData.question || "",
+    response: trialData.response ?? "",  // null-safe
+    rt: trialData.rt ?? "",              // null-safe
+    timestamp: Date.now()
+  };
+
+  database.ref(`participants/${participantID}/trials`).push(entry);
 };
 
 const general_instructions = {
@@ -100,7 +127,9 @@ const makeImageBlock = (facePath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "dominant", stimulus: facePath, modality: "image" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -112,7 +141,9 @@ const makeImageBlock = (facePath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "trustworthy", stimulus: facePath, modality: "image" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -124,7 +155,9 @@ const makeImageBlock = (facePath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "honest", stimulus: facePath, modality: "image" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -136,7 +169,9 @@ const makeImageBlock = (facePath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "attractive", stimulus: facePath, modality: "image" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -145,8 +180,10 @@ const makeImageBlock = (facePath) => ({
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: facePath, modality: "image" },
-      on_finish: logToSheet
-    }
+      on_finish: function(data) {
+        logToFirebase(data);
+}
+    },
   ]
 });
 
@@ -163,7 +200,9 @@ const makeAudioBlock = (audioPath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -175,7 +214,9 @@ const makeAudioBlock = (audioPath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "trustworthy", stimulus: audioPath, modality: "audio" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -187,7 +228,9 @@ const makeAudioBlock = (audioPath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "honest", stimulus: audioPath, modality: "audio" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -199,7 +242,9 @@ const makeAudioBlock = (audioPath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "attractive", stimulus: audioPath, modality: "audio" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -208,7 +253,9 @@ const makeAudioBlock = (audioPath) => ({
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: audioPath, modality: "audio" },
-      on_finish: logToSheet
+      on_finish: function(data) {
+        logToFirebase(data);
+}
     },
     {
       type: jsPsychSurveyHtmlForm,
@@ -233,7 +280,9 @@ const makeAudioBlock = (audioPath) => ({
         </div>
       `,
       data: { question: "human_voice", stimulus: audioPath, modality: "audio" },
-      on_finish: logToSheet
+     on_finish: function(data) {
+        logToFirebase(data);
+}
     }
   ]
 });
@@ -303,9 +352,6 @@ const buildStimulusBlock = (imageIDs, audioIDs, blockLabel) => {
   return block;
 };
 
-
-
-
 // Add "block" label to each trial
 const tagBlock = (blockArray, blockLabel) =>
   blockArray.map(trial => ({
@@ -337,7 +383,27 @@ function createEndOfBlockScreen(blockLabel) {
         <p>Press SPACE to continue.</p>
       </div>
     `,
-    choices: [' ']
+    choices: [' '],
+    data: { 
+      question: "break_screen", 
+      modality: "break", 
+      block: blockLabel 
+    },
+    on_finish: function(data) {
+      const participantID = jsPsych.data.get().values()[0]?.participantID || "unknown";
+      const entry = {
+        participantID,
+        group,
+        modality: "break",
+        block: data.block,
+        question: "break_screen",
+        stimulus: "",
+        response: "",
+        rt: data.rt,
+        timestamp: Date.now()
+      };
+      database.ref(`participants/${participantID}/trials`).push(entry);
+    }
   };
 }
 
