@@ -45,7 +45,7 @@ const general_instructions = {
   type: jsPsychHtmlKeyboardResponse,
   stimulus: `
     <p>Welcome to the experiment. This experiment will take approximately <strong>30 minutes</strong> to complete.</p>
-    <p>Please make sure you are in a quiet space while doing the experiment.</p>
+    <p>Please make sure you are in a quiet space and have a strong Wi-Fi connection while doing this experiment.</p>
     <p>If you wish to stop at any point, simply close this page and your data will not be recorded.</p>
     <p style="margin-top: 40px;">Press SPACE to continue.</p>
     `,
@@ -57,7 +57,7 @@ const instructions_part1 = {
   stimulus: `
     <h2>Instructions</h2>
     <p>There will be 3 blocks in this experiment, Blocks A, B, and C (presented randomly). In each block, you'll first see an image and answer 5 questions about the image, followed by an audio recording with 6 questions per recording.</p>
-    <p>Please make sure you are in a quiet space for the audio trials.</p>
+    <p>Please make sure you are in a quiet space for the audio trials. You may listen to the audio clips using either headphones or your computer speaker.</p>
     <p style="margin-top: 40px;">Press SPACE to view examples of the images and audio recordings before you begin the actual experiment.</p>
     `,
   choices: [' ']
