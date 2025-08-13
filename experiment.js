@@ -340,7 +340,6 @@ const makeAudioBlock = (audioPath) => ({
   ]
 });
 
-const audioBlocks = {
 function addBlockLabelToTrial(trial, blockLabel) {
   trial.timeline = trial.timeline.map(t => {
     const labelHtml = `<div style="text-align:center; font-size:12px; color:#999; opacity:0.3; position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1000;">
