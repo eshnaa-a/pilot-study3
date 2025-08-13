@@ -217,8 +217,9 @@ const makeAudioBlock = (audioPath) => ({
              </div>`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_start: () => {
-        const aud = jsPsych.getDisplayElement().querySelector("audio");
-        if (aud) aud.playbackRate = 1.0;
+      if (aud) {
+        aud.playbackRate = 1.0;
+        aud.play();  
       },
       on_finish: function(data) {
         logToFirebase(data);
