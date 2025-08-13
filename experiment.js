@@ -49,7 +49,13 @@ Object.values(audioBlocks).forEach(block => {
 });
 
 console.log('Preloading audio:', allAudioPaths.length, 'files');
-jsPsych.pluginAPI.preloadAudioFiles(allAudioPaths);
+const preload = {
+  type: jsPsychPreload,
+  audio: allAudioPaths,
+  auto_preload: true
+};
+
+timeline.unshift(preload);
 
 const logToFirebase = (trialData) => {
   const participantID = jsPsych.data.get().values()[0]?.participantID || "unknown";
