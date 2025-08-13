@@ -220,7 +220,7 @@ const makeAudioBlock = (audioPath) => ({
       if (aud) {
         aud.playbackRate = 1.0;
         aud.play();  
-      },
+      }
       on_finish: function(data) {
         logToFirebase(data);
 }
