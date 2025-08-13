@@ -35,28 +35,6 @@ const audioBlocks = {
   c: [13, 14, 15, 16, 17, 18, 19, 20] // 24 audio trials
 };
 
-// Audio preloads
-let allAudioPaths = [];
-
-// Loop through all audio blocks and collect paths
-Object.values(audioBlocks).forEach(block => {
-  block.forEach(audioID => {
-    [1, 2, 3].forEach(pitch => {
-      const path = `all_audios/${group}_voice${audioID.toString().padStart(2, "0")}_pitch${pitch}.wav`;
-      allAudioPaths.push(path);
-    });
-  });
-});
-
-console.log('Preloading audio:', allAudioPaths.length, 'files');
-const preload = {
-  type: jsPsychPreload,
-  audio: allAudioPaths,
-  auto_preload: true
-};
-
-timeline.unshift(preload);
-
 const logToFirebase = (trialData) => {
   const participantID = jsPsych.data.get().values()[0]?.participantID || "unknown";
 
