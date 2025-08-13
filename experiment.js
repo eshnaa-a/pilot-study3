@@ -211,8 +211,12 @@ const makeAudioBlock = (audioPath) => ({
         jsPsych.pluginAPI.preloadAudio(audioPath);
         const aud = document.getElementById("audioPlayer");
         if (aud) aud.playbackRate = 1.0;
+        aud.addEventListener("ended", () => {
+          jsPsych.finishTrial();
+        }, { once: true });
       }
     },
+
     // Survey questions
     {
       type: jsPsychSurveyHtmlForm,
