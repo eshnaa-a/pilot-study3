@@ -208,7 +208,7 @@ const makeAudioBlock = (audioPath) => ({
   timeline: [
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
+      preamble: `<audio controls autoplay controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
@@ -218,10 +218,7 @@ const makeAudioBlock = (audioPath) => ({
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_start: () => {
       const aud = jsPsych.getDisplayElement().querySelector("audio");
-      if (aud) {
-        aud.playbackRate = 1.0;
-        aud.play();  
-       }
+      if (aud) aud.playbackRate = 1.0;
       },
       on_finish: function(data) {
         logToFirebase(data);
