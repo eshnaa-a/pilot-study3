@@ -22,6 +22,34 @@ const group = jsPsych.randomization.sampleWithoutReplacement(["male", "female"],
 const participantID = jsPsych.data.getURLVariable("id") || Math.floor(Math.random() * 1000000);
 jsPsych.data.addProperties({ participantID });
 
+// Blocks set up
+const imageBlocks = {
+  a: [1, 2, 3],       // 18 image trials
+  b: [4, 5, 6],       // 18 image trials
+  c: [7, 8, 9, 10]    // 24 image trials
+};
+
+const audioBlocks = {
+  a: [1, 2, 3, 4, 5, 6],         // 18 audio trials
+  b: [7, 8, 9, 10, 11, 12],      // 18 audio trials
+  c: [13, 14, 15, 16, 17, 18, 19, 20] // 24 audio trials
+};
+
+// Audio preloads
+let allAudioPaths = [];
+
+// Loop through all audio blocks and collect paths
+Object.values(audioBlocks).forEach(block => {
+  block.forEach(audioID => {
+    [1, 2, 3].forEach(pitch => {
+      const path = `all_audios/${group}_voice${audioID.toString().padStart(2, "0")}_pitch${pitch}.wav`;
+      allAudioPaths.push(path);
+    });
+  });
+});
+
+console.log('Preloading audio:', allAudioPaths.length, 'files');
+jsPsych.pluginAPI.preloadAudioFiles(allAudioPaths);
 
 const logToFirebase = (trialData) => {
   const participantID = jsPsych.data.get().values()[0]?.participantID || "unknown";
@@ -312,19 +340,7 @@ const makeAudioBlock = (audioPath) => ({
   ]
 });
 
-// Blocks set up
-const imageBlocks = {
-  a: [1, 2, 3],       // 18 image trials
-  b: [4, 5, 6],       // 18 image trials
-  c: [7, 8, 9, 10]    // 24 image trials
-};
-
 const audioBlocks = {
-  a: [1, 2, 3, 4, 5, 6],         // 18 audio trials
-  b: [7, 8, 9, 10, 11, 12],      // 18 audio trials
-  c: [13, 14, 15, 16, 17, 18, 19, 20] // 24 audio trials
-};
-
 function addBlockLabelToTrial(trial, blockLabel) {
   trial.timeline = trial.timeline.map(t => {
     const labelHtml = `<div style="text-align:center; font-size:12px; color:#999; opacity:0.3; position: fixed; top: 5px; left: 50%; transform: translateX(-50%); z-index: 1000;">
@@ -448,7 +464,7 @@ timeline.push({
     <p>You may now close this window.</p>
   `,
   choices: "NO_KEYS",
-  trial_duration: 5000
+  trial_duration: 7000
 });
 
 jsPsych.run(timeline);
