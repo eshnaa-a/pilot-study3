@@ -247,18 +247,26 @@ const makeAudioBlock = (audioPath) => ({
   timeline: [
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<audio controls autoplay controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
+      preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
-        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+        <i>Please use your mouse and the slider below to make your selection.</i><br>
+        <i>You can replay this audio as many times as you like while answering.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_start: () => {
-      const aud = jsPsych.getDisplayElement().querySelector("audio");
-      if (aud) aud.playbackRate = 1.0;
+        const aud = jsPsych.getDisplayElement().querySelector("audio");
+        const slider = jsPsych.getDisplayElement().querySelector("input[name='response']");
+        if (aud) aud.playbackRate = 1.0;
+
+        slider.disabled = true;
+        aud.addEventListener("ended", () => {
+          slider.disabled = false;
+        });
       },
+   
       on_finish: function(data) {
         logToFirebase(data);
 }
@@ -267,7 +275,8 @@ const makeAudioBlock = (audioPath) => ({
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How trustworthy do you think this person is, based on their voice? (1 = Not trustworthy at all, 7 = Very trustworthy)</b><br>
-        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+        <i>Please use your mouse and the slider below to make your selection.</i><br>
+        <i>You can replay this audio as many times as you like while answering.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
@@ -285,7 +294,8 @@ const makeAudioBlock = (audioPath) => ({
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How honest do you think this person is, based on their voice? (1 = Not honest at all, 7 = Very honest)</b><br>
-        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+        <i>Please use your mouse and the slider below to make your selection.</i><br>
+        <i>You can replay this audio as many times as you like while answering.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
@@ -303,7 +313,8 @@ const makeAudioBlock = (audioPath) => ({
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How attractive do you think this person is, based on their voice? (1 = Not attractive at all, 7 = Very attractive)</b><br>
-        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+        <i>Please use your mouse and the slider below to make your selection.</i>(br>
+        <i>You can replay this audio as many times as you like while answering.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
@@ -321,7 +332,8 @@ const makeAudioBlock = (audioPath) => ({
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How tall do you think this person is, based on their voice?</b><br>
-        <i>Please use your mouse and the slider below to make your selection.</i></p>`,
+        <i>Please use your mouse and the slider below to make your selection.</i><br>
+        <i>You can replay this audio as many times as you like while answering.</i></p>`,
       html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: audioPath, modality: "audio" },
       on_start: () => {
@@ -335,7 +347,8 @@ const makeAudioBlock = (audioPath) => ({
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
-      <p><b>Does this voice sound more human or robotic to you?</b></p>
+      <p><b>Does this voice sound more human or robotic to you?</b>
+      <i>You can replay this audio as many times as you like while answering.</i></p>
       `,
       html: `
         <div>
@@ -361,7 +374,7 @@ const makeAudioBlock = (audioPath) => ({
 }
     }
   ]
-});
+}); 
 
 function addBlockLabelToTrial(trial, blockLabel) {
   trial.timeline = trial.timeline.map(t => {
