@@ -254,21 +254,26 @@ const makeAudioBlock = (audioPath) => ({
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
-             </div>`,
+             </div>
+             <input type="hidden" name="audio_played" value="false">`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_load: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
-        const btn = jsPsych.getDisplayElement().querySelector(".jspsych-btn");
+        const audioPlayedInput = jsPsych.getDisplayElement().querySelector("input[name='audio_played']");
         if (aud) aud.playbackRate = 1.0;
-        if (aud && btn) {
-          btn.disabled = true;
+        if (aud && audioPlayedInput) {
           aud.addEventListener("ended", () => {
-            btn.disabled = false;
+            audioPlayedInput.value = "true";
           });
         }
       },
    
       on_finish: function(data) {
+        const audioPlayedInput = jsPsych.getDisplayElement().querySelector("input[name='audio_played']");
+        if (!audioPlayedInput || audioPlayedInput.value !== "true") {
+          alert("Please listen to the audio at least once before continuing.");
+          return false;
+        }
         logToFirebase(data);
 }
     },
