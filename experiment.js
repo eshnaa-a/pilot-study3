@@ -134,6 +134,7 @@ let timeline = [general_instructions, instructions_part1, exampleImageTrial, exa
 
 const heightLabels = `
   <div style='display: flex; justify-content: space-between; font-size: 12px;'>
+    <span>5'0"</span><span>5'1"</span><span>5'2"</span><span>5'3"</span><span>5'4"</span>
     <span>5'5"</span><span>5'6"</span><span>5'7"</span><span>5'8"</span><span>5'9"</span>
     <span>5'10"</span><span>5'11"</span><span>6'0"</span><span>6'1"</span><span>6'2"</span>
     <span>6'3"</span><span>6'4"</span><span>6'5"</span>
@@ -141,6 +142,25 @@ const heightLabels = `
 
 // === IMAGE BLOCK ===
 const makeImageBlock = (facePath) => ({
+  // Set height slider range based on group
+  let minHeight, maxHeight, heightLabels;
+  if (group === "female") {
+    minHeight = 1;  // 5'0"
+    maxHeight = 13; // 6'0"
+    heightLabels = `
+      <div style='display: flex; justify-content: space-between; font-size: 12px;'>
+        <span>5'0"</span><span>5'1"</span> ... <span>6'0"</span>
+      </div>`;
+  } else { // male
+    minHeight = 6;  // 5'5"
+    maxHeight = 18; // 6'5"
+    heightLabels = `
+      <div style='display: flex; justify-content: space-between; font-size: 12px;'>
+        <span>5'5"</span><span>5'4"</span> ... <span>6'5"</span>
+      </div>`;
+  }
+
+  return {
   timeline: [
     {
       type: jsPsychSurveyHtmlForm,
@@ -208,7 +228,7 @@ const makeImageBlock = (facePath) => ({
         <img src="${facePath}" height="300"><br>
         <p><b> How tall do you think this person is?</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
-      html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
+      html: `<input type='range' name='response' min='${minHeight}' max='${maxHeight}' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: facePath, modality: "image" },
       on_finish: function(data) {
         logToFirebase(data);
