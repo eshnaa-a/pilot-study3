@@ -141,7 +141,7 @@ const heightLabels = `
   </div>`;
 
 // === IMAGE BLOCK ===
-const makeImageBlock = (facePath) => ({
+const makeImageBlock = (facePath) => {
   // Set height slider range based on group
   let minHeight, maxHeight, heightLabels;
   if (group === "female") {
@@ -232,10 +232,11 @@ const makeImageBlock = (facePath) => ({
       data: { question: "tall", stimulus: facePath, modality: "image" },
       on_finish: function(data) {
         logToFirebase(data);
-}
-    },
-  ]
-});
+      }
+     }
+    ]
+  };
+};
 
 // === AUDIO BLOCK ===
 const makeAudioBlock = (audioPath) => ({
