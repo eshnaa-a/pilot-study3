@@ -258,7 +258,7 @@ const makeAudioBlock = (audioPath) => ({
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_load: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
-        const btn = jsPsych.getDisplayElement().querySelector("button");
+        const btn = jsPsych.getDisplayElement().querySelector(".jspsych-btn");
         if (aud) aud.playbackRate = 1.0;
         if (aud && btn) {
           btn.disabled = true;
