@@ -256,15 +256,16 @@ const makeAudioBlock = (audioPath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
-      on_start: () => {
+      on_load: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
         const slider = jsPsych.getDisplayElement().querySelector("input[name='response']");
         if (aud) aud.playbackRate = 1.0;
-
-        slider.disabled = true;
-        aud.addEventListener("ended", () => {
-          slider.disabled = false;
-        });
+        if (slider) {
+          slider.disabled = true;
+          aud.addEventListener("ended", () => {
+            slider.disabled = false;
+          });
+        }
       },
    
       on_finish: function(data) {
@@ -313,7 +314,7 @@ const makeAudioBlock = (audioPath) => ({
       type: jsPsychSurveyHtmlForm,
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How attractive do you think this person is, based on their voice? (1 = Not attractive at all, 7 = Very attractive)</b><br>
-        <i>Please use your mouse and the slider below to make your selection.</i>(br>
+        <i>Please use your mouse and the slider below to make your selection.</i><br>
         <i>You can replay this audio as many times as you like while answering.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
