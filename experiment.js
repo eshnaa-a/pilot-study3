@@ -1,3 +1,11 @@
+var style = document.createElement('style');
+style.innerHTML = `
+  body {
+    font-size: 23px !important;
+  }
+`;
+document.head.appendChild(style);
+
 // Initialize Firebase (put at the top of experiment.js)
 const firebaseConfig = {
   apiKey: "AIzaSyCBr9qbeKaCc32V1Ev_CQFDD6wpSTuZeps",
@@ -58,7 +66,7 @@ const general_instructions = {
   stimulus: `
     <p>Welcome to the experiment. This experiment will take approximately <strong>30 minutes</strong> to complete.</p>
     <p>Please make sure you are in a quiet space and have a strong Wi-Fi connection while doing this experiment.</p>
-    <p>If you wish to stop at any point, simply close this page and your data will not be recorded.</p>
+    <p>If you wish to stop at any point, simply close this tab and your data will not be recorded.</p>
     <p style="margin-top: 40px;">Press SPACE to continue.</p>
     `,
   choices: [' ']
@@ -84,6 +92,7 @@ const exampleImageTrial = {
       <img src="all_images/example1.png" height="200" alt="Example dog image">
     </div>
     <p><strong>Example question:</strong> How friendly does this dog look to you?</p>
+    <p><em>The image may take a few seconds to load.</em></p>
     <p><em>In the real experiment, you will answer questions like this using a Likert scale from 1 (Not friendly at all) to 7 (Very friendly).</em></p>
     <p><strong>Press SPACE to continue.</strong></p>
   `,
@@ -135,7 +144,8 @@ const makeImageBlock = (facePath) => ({
   timeline: [
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<img src="${facePath}" height="300"><br>
+      preamble: `<p><em>The image may take a few seconds to load.</em></p>
+        <img src="${facePath}" height="300"><br>
         <p><b> How dominant do you think this person is? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
