@@ -256,14 +256,14 @@ const makeAudioBlock = (audioPath) => ({
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
              </div>`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
-      on_load: () => {
+      on_start: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
-        const slider = jsPsych.getDisplayElement().querySelector("input[name='response']");
+        const btn = jsPsych.getDisplayElement().querySelector("button");
         if (aud) aud.playbackRate = 1.0;
-        if (slider) {
-          slider.disabled = true;
+        if (aud && btn) {
+          btn.disabled = true;
           aud.addEventListener("ended", () => {
-            slider.disabled = false;
+            btn.disabled = false;
           });
         }
       },
