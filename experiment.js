@@ -159,7 +159,8 @@ const makeImageBlock = (facePath) => ({
     },
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<img src="${facePath}" height="300"><br>
+      preamble: `<p><em>The image may take a few seconds to load.</em></p>
+        <img src="${facePath}" height="300"><br>
         <p><b> How trustworthy do you think this person is? (1= Not trustworthy at all, 7 = Very trustworthy)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
@@ -173,7 +174,8 @@ const makeImageBlock = (facePath) => ({
     },
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<img src="${facePath}" height="300"><br>
+      preamble: `<p><em>The image may take a few seconds to load.</em></p>
+        <img src="${facePath}" height="300"><br>
         <p><b> How honest do you think this person is? (1= Not honest at all, 7 = Very honest)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
@@ -187,7 +189,8 @@ const makeImageBlock = (facePath) => ({
     },
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<img src="${facePath}" height="300"><br>
+      preamble: `<p><em>The image may take a few seconds to load.</em></p>
+        <img src="${facePath}" height="300"><br>
         <p><b> How attractive do you think this person is? (1 = Not attractive at all, 7 = Very attractive)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
@@ -201,7 +204,8 @@ const makeImageBlock = (facePath) => ({
     },
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<img src="${facePath}" height="300"><br>
+      preamble: `<p><em>The image may take a few seconds to load.</em></p>
+        <img src="${facePath}" height="300"><br>
         <p><b> How tall do you think this person is?</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i></p>`,
       html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
