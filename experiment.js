@@ -247,25 +247,33 @@ const makeImageBlock = (facePath) => {
 const makeAudioBlock = (audioPath) => ({
   timeline: [
 
-    // === 1. Gating Trial (forces at least 1 full listen) ===
+    // === 1. Gating Trial ===
     {
-      type: jsPsychHtmlButtonResponse,
+      type: jsPsychHtmlKeyboardResponse,
       stimulus: `
-        <p><b>Please listen to the audio below.<br>
-        You must listen to the full clip before continuing.</b></p>
+        <p><b>Please listen to the audio below.</b><br>
+        You must listen to the full clip before continuing.</p>
         <audio id="gatedAudio" controls controlsList="noplaybackrate">
           <source src="${audioPath}" type="audio/wav">
         </audio>
+        <p id="continueMsg" style="display:none;"><i>Press any key to continue...</i></p>
       `,
-      choices: [], // no continue button at first
+      choices: "NO_KEYS", // disable keypress until audio finishes
       on_load: () => {
         const aud = document.getElementById("gatedAudio");
+        const msg = document.getElementById("continueMsg");
+
         aud.addEventListener("ended", () => {
-          // unlock Continue button once audio fully played
-          const btnContainer = jsPsych.getDisplayElement().querySelector(".jspsych-html-button-response-button-container");
-          if (btnContainer) {
-            btnContainer.innerHTML = `<button class="jspsych-btn">Continue</button>`;
-          }
+          // show message and allow key press
+          msg.style.display = "block";
+          jsPsych.pluginAPI.setTimeout(() => {
+            jsPsych.getDisplayElement().focus(); // ensure keyboard input works
+            // now allow key to finish trial
+            jsPsych.pluginAPI.getKeyboardResponse({
+              callback_function: () => jsPsych.finishTrial(),
+              valid_responses: jsPsych.ALL_KEYS
+            });
+          }, 0);
         });
       }
     },
