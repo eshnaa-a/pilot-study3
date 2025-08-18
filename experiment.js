@@ -243,33 +243,54 @@ const makeImageBlock = (facePath) => {
 };
 
 // === AUDIO BLOCK ===
+
 const makeAudioBlock = (audioPath) => ({
   timeline: [
+
+    // === 1. Gating Trial (forces at least 1 full listen) ===
+    {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `
+        <p><b>Please listen to the audio below.<br>
+        You must listen to the full clip before continuing.</b></p>
+        <audio id="gatedAudio" controls controlsList="noplaybackrate">
+          <source src="${audioPath}" type="audio/wav">
+        </audio>
+      `,
+      choices: [], // no continue button at first
+      on_load: () => {
+        const aud = document.getElementById("gatedAudio");
+        aud.addEventListener("ended", () => {
+          // unlock Continue button once audio fully played
+          const btnContainer = jsPsych.getDisplayElement().querySelector(".jspsych-html-button-response-button-container");
+          if (btnContainer) {
+            btnContainer.innerHTML = `<button class="jspsych-btn">Continue</button>`;
+          }
+        });
+      }
+    },
+
+    // === 2. Rating Trial (survey form) ===
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<audio id="audioStim" controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio>
-        <p><b> How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
+      preamble: `
+        <audio id="audioStim" controls controlsList="noplaybackrate">
+          <source src="${audioPath}" type="audio/wav">
+        </audio>
+        <p><b>How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i><br>
-        <i>You can replay this audio as many times as you like, but you must listen to the full clip before continuing.</i></p>
+        <i>You can replay this audio as many times as you like.</i></p>
       `,
-      html:`<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
+      html: `
+        <input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
         <div style='display: flex; justify-content: space-between;'>
           <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
         </div>
-       `,
+      `,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
-      on_load: () => {
-        const aud = document.getElementById("audioStim");
-        const checkBtn = setInterval(() => {
-          const btn = jsPsych.getDisplayElement().querySelector("button.jspsych-btn");
-          if (btn) {
-            btn.disabled = true; // disable Continue immediately
-            aud.addEventListener("ended", () => {
-              btn.disabled = false; // enable Continue when audio ends
-            });
-            clearInterval(checkBtn); // stop polling
-          }
-        }, 50); // check every 50ms
+      on_start: () => {
+        const aud = jsPsych.getDisplayElement().querySelector("audio");
+        if (aud) aud.playbackRate = 1.0;
       },
       on_finish: function(data) {
         logToFirebase(data);
