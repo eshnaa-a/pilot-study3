@@ -250,32 +250,25 @@ const makeAudioBlock = (audioPath) => ({
       preamble: `<audio controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
         <p><b> How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i><br>
-        <i>You can replay this audio as many times as you like while answering.</i></p>`,
+        <i>You can replay this audio as many times as you like, but you must listen to the full clip before continuing.</i></p>`,
       html: `<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
              <div style='display: flex; justify-content: space-between;'>
                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
-             </div>
-             <input type="hidden" name="audio_played" value="false">`,
+             </div>`,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_load: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
-        const audioPlayedInput = jsPsych.getDisplayElement().querySelector("input[name='audio_played']");
-        if (aud) aud.playbackRate = 1.0;
-        if (aud && audioPlayedInput) {
+        const btn = jsPsych.getDisplayElement().querySelector("button.jspsych-btn"); // the default Continue button
+        if (aud && btn) {
+          btn.disabled = true; // disable Continue
           aud.addEventListener("ended", () => {
-            audioPlayedInput.value = "true";
+            btn.disabled = false; // enable Continue once audio finishes
           });
         }
       },
-   
       on_finish: function(data) {
-        const audioPlayedInput = jsPsych.getDisplayElement().querySelector("input[name='audio_played']");
-        if (!audioPlayedInput || audioPlayedInput.value !== "true") {
-          alert("Please listen to the audio at least once before continuing.");
-          return false;
-        }
         logToFirebase(data);
-}
+      }
     },
     {
       type: jsPsychSurveyHtmlForm,
