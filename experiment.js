@@ -260,14 +260,16 @@ const makeAudioBlock = (audioPath) => ({
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_load: () => {
         const aud = document.getElementById("audioStim");
-        const btn = jsPsych.getDisplayElement().querySelector("button.jspsych-btn"); 
-        if (aud && btn) {
-          btn.disabled = true; // disable Continue
-          aud.addEventListener("ended", () => {
-            firstQ.style.display = "block";
-            btn.disabled = false; // enable Continue once audio finishes
-          });
-        }
+        const checkBtn = setInterval(() => {
+          const btn = jsPsych.getDisplayElement().querySelector("button.jspsych-btn");
+          if (btn) {
+            btn.disabled = true; // disable Continue immediately
+            aud.addEventListener("ended", () => {
+              btn.disabled = false; // enable Continue when audio ends
+            });
+            clearInterval(checkBtn); // stop polling
+          }
+        }, 50); // check every 50ms
       },
       on_finish: function(data) {
         logToFirebase(data);
