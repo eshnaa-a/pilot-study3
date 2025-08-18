@@ -247,24 +247,21 @@ const makeAudioBlock = (audioPath) => ({
   timeline: [
     {
       type: jsPsychSurveyHtmlForm,
-      preamble: `<audio id="audioStim" controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio><br>
-       <div id="firstQuestionContent" style="display:none;">
+      preamble: `<audio id="audioStim" controls controlsList="noplaybackrate"><source src="${audioPath}" type="audio/wav"></audio>
         <p><b> How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i><br>
         <i>You can replay this audio as many times as you like, but you must listen to the full clip before continuing.</i></p>
-        <input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
+      `,
+      html:`<input type='range' name='response' min='1' max='7' step='1' style='width: 100%;'><br>
         <div style='display: flex; justify-content: space-between;'>
           <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
-          </div>
         </div>
        `,
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_load: () => {
         const aud = document.getElementById("audioStim");
-        const firstQ = document.getElementById("firstQuestionContent");
         const btn = jsPsych.getDisplayElement().querySelector("button.jspsych-btn"); 
-
-        if (aud && firstQ && btn) {
+        if (aud && btn) {
           btn.disabled = true; // disable Continue
           aud.addEventListener("ended", () => {
             firstQ.style.display = "block";
