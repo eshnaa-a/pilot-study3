@@ -246,32 +246,10 @@ const makeImageBlock = (facePath) => {
 
 const makeAudioBlock = (audioPath) => ({
   timeline: [
-
-    // === 1. Gating Trial ===
-  {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-        <p><b>Please listen to the audio below.</b><br>
-        You must listen to the full clip before continuing.</p>
-        <audio id="gatedAudio" controls controlsList="noplaybackrate">
-            <source src="${audioPath}" type="audio/wav">
-        </audio>
-    `,
-    choices: [], // initially no buttons
-    on_load: () => {
-        const aud = document.getElementById("gatedAudio");
-        const btnContainer = jsPsych.getDisplayElement().querySelector(".jspsych-html-button-response-button-container");
-        aud.addEventListener("ended", () => {
-            btnContainer.innerHTML = `<button class="jspsych-btn">Continue</button>`;
-        });
-      }
-    },
-
-    // === 2. Rating Trial (survey form) ===
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `
-        <audio id="audioStim" controls controlsList="noplaybackrate">
+        <audio id="audioStim" autoplay controls controlsList="noplaybackrate">
           <source src="${audioPath}" type="audio/wav">
         </audio>
         <p><b>How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
@@ -284,11 +262,22 @@ const makeAudioBlock = (audioPath) => ({
           <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span>
         </div>
       `,
-      data: { question: "dominant", stimulus: audioPath, modality: "audio" },
-      on_start: () => {
-        const aud = jsPsych.getDisplayElement().querySelector("audio");
+      button_label: "Continue",
+      on_load: () => {
+        // Disable continue button at start
+        const display = jsPsych.getDisplayElement();
+        const btn = document.querySelector("button.jspsych-btn");
+        btn.disabled = true;
+
+        // Enable after 5 seconds
+        setTimeout(() => {
+          btn.disabled = false;
+        }, 5000);
+
+        const aud = document.getElementById("audioStim");
         if (aud) aud.playbackRate = 1.0;
       },
+      data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_finish: function(data) {
         logToFirebase(data);
       }
