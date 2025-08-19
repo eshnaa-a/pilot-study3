@@ -270,11 +270,11 @@ const makeAudioBlock = (audioPath) => ({
         const checkButton = setInterval(() => {
           const btn = display.querySelector("button.jspsych-btn");
           if (btn) {
-            btn.disabled = true;  // disable immediately
+            btn.style.display = "none";
 
-            // Re-enable after 5s
+            // show button after 5s
             setTimeout(() => {
-              btn.disabled = false;
+              btn.style.display = "inline-block";
             }, 5000);
 
             clearInterval(checkButton); // stop checking
