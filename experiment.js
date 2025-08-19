@@ -66,7 +66,7 @@ const general_instructions = {
   stimulus: `
     <p>Welcome to the experiment. This experiment will take approximately <strong>30 minutes</strong> to complete.</p>
     <p>Please make sure you are in a quiet space and have a strong Wi-Fi connection while doing this experiment.</p>
-    <p>If you wish to stop at any point, simply close this tab and your data will not be recorded.</p>
+    <p>If you wish to stop participating in this study at any point, simply close the window and your data will not be recorded.</p>
     <p style="margin-top: 40px;">Press SPACE to continue.</p>
     `,
   choices: [' ']
@@ -244,8 +244,31 @@ const makeImageBlock = (facePath) => {
 
 // === AUDIO BLOCK ===
 
-const makeAudioBlock = (audioPath) => ({
-  timeline: [
+const makeAudioBlock = (audioPath) => {
+  // Set height range & labels based on group
+  let minHeight, maxHeight, heightLabelsAudio;
+  if (group === "female") {
+    minHeight = 1;   // 5'0"
+    maxHeight = 13;  // 6'0"
+    heightLabelsAudio = `
+      <div style='display: flex; justify-content: space-between; font-size: 12px;'>
+        <span>5'0"</span><span>5'1"</span><span>5'2"</span><span>5'3"</span><span>5'4"</span>
+        <span>5'5"</span><span>5'6"</span><span>5'7"</span><span>5'8"</span><span>5'9"</span>
+        <span>5'10"</span><span>5'11"</span><span>6'0"</span>
+      </div>`;
+  } else { // male
+    minHeight = 6;   // 5'5"
+    maxHeight = 18;  // 6'5"
+    heightLabelsAudio = `
+      <div style='display: flex; justify-content: space-between; font-size: 12px;'>
+        <span>5'5"</span><span>5'6"</span><span>5'7"</span><span>5'8"</span>
+        <span>5'9"</span><span>5'10"</span><span>5'11"</span><span>6'0"</span>
+        <span>6'1"</span><span>6'2"</span><span>6'3"</span><span>6'4"</span><span>6'5"</span>
+      </div>`;
+  }
+
+  return {  
+   timeline: [
     {
       type: jsPsychSurveyHtmlForm,
       preamble: `
@@ -347,7 +370,7 @@ const makeAudioBlock = (audioPath) => ({
         <p><b> How tall do you think this person is, based on their voice?</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i><br>
         <i>You can replay this audio as many times as you like while answering.</i></p>`,
-      html: `<input type='range' name='response' min='1' max='13' step='1' style='width: 100%;'><br>${heightLabels}`,
+      html: `<input type='range' name='response' min='${minHeight}' max='13' step='${maxHeight}' step='1' style='width: 100%;'><br>${heightLabels}`,
       data: { question: "tall", stimulus: audioPath, modality: "audio" },
       on_start: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
