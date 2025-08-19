@@ -264,29 +264,22 @@ const makeAudioBlock = (audioPath) => ({
       `,
       button_label: "Continue",
       on_load: () => {
-        const display = jsPsych.getDisplayElement();
-
-        // Disable continue button at start. Wait until the button is rendered
-        const checkButton = setInterval(() => {
-          const btn = display.querySelector("button.jspsych-btn");
-          if (btn) {
-            btn.style.display = "none";
-
-            // show button after 5s
-            setTimeout(() => {
-              btn.style.display = "inline-block";
-            }, 5000);
-
-            clearInterval(checkButton); // stop checking
-          }
-        }, 50);
-
-
         const aud = document.getElementById("audioStim");
         if (aud) {
           aud.playbackRate = 1.0;
           aud.play().catch(() => {});
         }
+
+        // Wait for button to exist, then disable it
+        setTimeout(() => {
+          const btn = document.querySelector(".jspsych-survey-html-form .jspsych-btn");
+          if (btn) {
+            btn.disabled = true;       // disable initially
+            setTimeout(() => {
+              btn.disabled = false;    // enable after 5s
+            }, 5000);
+          }
+        }, 50); // give a small delay for the button to be in DOM
       },
       data: { question: "dominant", stimulus: audioPath, modality: "audio" },
       on_finish: function(data) {
