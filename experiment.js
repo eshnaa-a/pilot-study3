@@ -370,7 +370,7 @@ const makeAudioBlock = (audioPath) => {
         <p><b> How tall do you think this person is, based on their voice?</b><br>
         <i>Please use your mouse and the slider below to make your selection.</i><br>
         <i>You can replay this audio as many times as you like while answering.</i></p>`,
-      html: `<input type='range' name='response' min='${minHeight}' max='13' step='${maxHeight}' step='1' style='width: 100%;'><br>${heightLabels}`,
+      html: `<input type='range' name='response' min='${minHeight}' max='${maxHeight}' step='1' style='width: 100%;'><br>${heightLabelsAudio}`,
       data: { question: "tall", stimulus: audioPath, modality: "audio" },
       on_start: () => {
         const aud = jsPsych.getDisplayElement().querySelector("audio");
