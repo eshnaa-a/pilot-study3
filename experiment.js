@@ -409,8 +409,8 @@ const makeAudioBlock = (audioPath) => {
         logToFirebase(data);
 }
     }
-  ]
-}); 
+   ]
+  }); 
 
 function addBlockLabelToTrial(trial, blockLabel) {
   trial.timeline = trial.timeline.map(t => {
