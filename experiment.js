@@ -270,10 +270,10 @@ const makeAudioBlock = (audioPath) => {
   const gateTrial = {
     type: jsPsychSurveyHtmlForm,
     preamble: `
-      <audio id="audioStim" autoplay controls>
+      <audio id="audioStim" autoplay controls controlsList="noplaybackrate">
         <source src="${audioPath}" type="audio/wav">
       </audio>
-      <p>Please listen to the full clip. You will answer questions afterwards.</p>
+      <p>Please listen to the full audio clip. You will answer questions about it afterwards.</p>
     `,
     html: `<p></p>`, // no questions for the gate trial
     button_label: "Continue",
@@ -299,7 +299,7 @@ const makeAudioBlock = (audioPath) => {
       {
         type: jsPsychSurveyHtmlForm,
         preamble: `
-          <audio id="audioStim" autoplay controls controlsList="noplaybackrate">
+          <audio id="audioStim" controls controlsList="noplaybackrate">
             <source src="${audioPath}" type="audio/wav">
           </audio>
           <p><b>How dominant do you think this person is, based on their voice? (1 = Not dominant at all, 7 = Very dominant)</b><br>
