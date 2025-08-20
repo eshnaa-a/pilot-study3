@@ -279,6 +279,7 @@ const makeAudioBlock = (audioPath) => {
 
   return {
     timeline: [
+      gateTrial,
       {
         type: jsPsychSurveyHtmlForm,
         preamble: `
