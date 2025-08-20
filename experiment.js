@@ -278,17 +278,20 @@ const makeAudioBlock = (audioPath) => {
     html: `<p></p>`, // no questions for the gate trial
     button_label: "Continue",
     on_load: () => {
-      const aud = document.getElementById("audioGate");
-      const btn = document.querySelector(".jspsych-btn");
-      if (btn) btn.disabled = true;
-
-      aud.onended = () => {
-        btn.disabled = false; // enable button after audio finishes
-      };
-    },
-    data: { stimulus: audioPath, modality: "audio_gate" }
+      const aud = document.getElementById("audioStim");
+      const btnInterval = setInterval(() => {
+        const btn = document.querySelector(".jspsych-btn");
+        if (btn && aud) {
+          btn.disabled = true;
+          aud.onended = () => {
+            btn.disabled = false; // enable button after audio finishes
+          };
+          clearInterval(btnInterval);
+        }
+      }, 50);
+     },
+    data: { stimulus: audioPath, modality: "audio" }
   };
-
 
   return {
     timeline: [
