@@ -268,14 +268,27 @@ const makeAudioBlock = (audioPath) => {
   }
 
   const gateTrial = {
-    type: jsPsychAudioKeyboardResponse,
-    stimulus: audioPath,
-    choices: "NO_KEYS",                   // no keys to end trial
-    response_allowed_while_playing: false,
-    trial_ends_after_audio: true,         // only ends when audio finishes
-    prompt: `<p>Please listen to the full clip. You will answer a question afterwards.</p>`,
+    type: jsPsychSurveyHtmlForm,
+    preamble: `
+      <audio id="audioStim" autoplay controls>
+        <source src="${audioPath}" type="audio/wav">
+      </audio>
+      <p>Please listen to the full clip. You will answer questions afterwards.</p>
+    `,
+    html: `<p></p>`, // no questions for the gate trial
+    button_label: "Continue",
+    on_load: () => {
+      const aud = document.getElementById("audioGate");
+      const btn = document.querySelector(".jspsych-btn");
+      if (btn) btn.disabled = true;
+
+      aud.onended = () => {
+        btn.disabled = false; // enable button after audio finishes
+      };
+    },
     data: { stimulus: audioPath, modality: "audio_gate" }
   };
+
 
   return {
     timeline: [
