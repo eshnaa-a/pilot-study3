@@ -300,14 +300,6 @@ const makeAudioBlock = (audioPath) => {
           const aud = document.getElementById("audioStim");
           if (aud) aud.playbackRate = 1.0;
 
-          const btnInterval = setInterval(() => {
-            const btn = document.querySelector(".jspsych-survey-html-form .jspsych-btn");
-            if (btn) {
-              clearInterval(btnInterval);
-              btn.disabled = true;
-              setTimeout(() => { btn.disabled = false; }, 5000);
-            }
-          }, 50);
         },
         data: { question: "dominant", stimulus: audioPath, modality: "audio" },
         on_finish: function(data) {
