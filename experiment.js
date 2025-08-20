@@ -273,7 +273,9 @@ const makeAudioBlock = (audioPath) => {
       <audio id="audioStim" autoplay controls controlsList="noplaybackrate">
         <source src="${audioPath}" type="audio/wav">
       </audio>
-      <p>Please listen to the full audio clip. You will answer questions about it afterwards.</p>
+      <p><b>Please listen to the entire audio clip before continuing.</b></p>
+      <p>Once you finish listening, you will answer a series of questions about this clip on the following pages.</p>
+      <p><i>You cannot continue until the audio has finished playing.</i></p>
     `,
     html: `<p></p>`, // no questions for the gate trial
     button_label: "Continue",
